@@ -19,18 +19,17 @@
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>k8s</directory>
-			<outputDirectory>k8s</outputDirectory>
+			<directory>clusters</directory>
+			<outputDirectory>clusters</outputDirectory>
 			<includes>
 				<include>**</include>
 			</includes>
 		</fileSet>
 		
-		<!-- @template: Set executable permissions to all scripts here for each fileSet. -->
 		<!-- Executable permissions -->
 		<fileSet>
-			<directory>apps/myapp/bin_sh/</directory>
-			<outputDirectory>apps/myapp/bin_sh/</outputDirectory>
+			<directory>apps/grafana_wan1/bin_sh/</directory>
+			<outputDirectory>apps/grafana_wan1/bin_sh/</outputDirectory>
 			<includes>
 				<include>**</include>
 			</includes>
@@ -38,8 +37,26 @@
 			<directoryMode>0755</directoryMode>
 		</fileSet>
 		<fileSet>
-			<directory>k8s/mykube/bin_sh/</directory>
-			<outputDirectory>k8s/mykube/bin_sh/</outputDirectory>
+			<directory>apps/perf_test_wan1/bin_sh/</directory>
+			<outputDirectory>apps/perf_test_wan1/bin_sh/</outputDirectory>
+			<includes>
+				<include>**</include>
+			</includes>
+			<fileMode>0755</fileMode>
+			<directoryMode>0755</directoryMode>
+		</fileSet>
+		<fileSet>
+			<directory>apps/perf_test_wan2/bin_sh/</directory>
+			<outputDirectory>apps/perf_test_wan2/bin_sh/</outputDirectory>
+			<includes>
+				<include>**</include>
+			</includes>
+			<fileMode>0755</fileMode>
+			<directoryMode>0755</directoryMode>
+		</fileSet>
+		<fileSet>
+			<directory>clusters/wan1/bin_sh/</directory>
+			<outputDirectory>clusters/wan2/bin_sh/</outputDirectory>
 			<includes>
 				<include>**</include>
 			</includes>

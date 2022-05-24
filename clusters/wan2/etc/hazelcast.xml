@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ~ Copyright (c) 2008-2019, Hazelcast, Inc. All Rights Reserved. ~ ~ 
+	Licensed under the Apache License, Version 2.0 (the "License"); ~ you may 
+	not use this file except in compliance with the License. ~ You may obtain 
+	a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0 ~ 
+	~ Unless required by applicable law or agreed to in writing, software ~ distributed 
+	under the License is distributed on an "AS IS" BASIS, ~ WITHOUT WARRANTIES 
+	OR CONDITIONS OF ANY KIND, either express or implied. ~ See the License for 
+	the specific language governing permissions and ~ limitations under the License. -->
+
+<!--******************************************************************************* 
+
+IMPORTANT:
+
+   padogrid depends on several system properties, which must be specified
+   in your hazelcast.xml. If you choose to use your own hazelcast.xml file then
+   make sure to include all system properties found in this file. The following
+   system properties are required: 
+   
+		"hazelcast-addon.cluster-name"
+		         Cluster name. Disabled by default. Hard coded: "dev".
+		         See below to see how to enable it. 
+		"hazelcast-addon.management-center" 
+		         MC URL.
+		"hazelcast-addon.tcp.port"
+		         TPC port number for the member.
+		"hazelcast-addon.tcp.members"
+		         A complete list of TCP member addresses.
+		
+******************************************************************************* -->
+
+<hazelcast xmlns="http://www.hazelcast.com/schema/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.hazelcast.com/schema/config
+	http://www.hazelcast.com/schema/config/hazelcast-config-4.2.xsd">
+
+	<properties>
+		<property name="hazelcast.phone.home.enabled">false</property>
+
+		<!-- =============== IpDiscoveryService - Begin =================== -->
+		<!-- tag is optional. It is used to prefix log messages. Default: IpDisocveryService -->
+		<property name="hazelcast.addon.ipdiscoveryservice.tag">WanDiscovery-global</property>
+		<!-- If service-enabled=true then a dedicated thread periodically probes
+        all the target endpoints at the startup time. Default: true -->
+		<property name="hazelcast.addon.ipdiscoveryservice.service-enabled">true</property>
+		<property name="hazelcast.addon.ipdiscoveryservice.service-delay-in-msec">30000</property>
+		<property name="hazelcast.addon.ipdiscoveryservice.connection-timeout-in-msec">200</property>
+		<property name="hazelcast.addon.ipdiscoveryservice.read-timeout-in-msec">200</property>
+		<property name="hazelcast.addon.ipdiscoveryservice.mx-use-hazelcast-object-name">false</property>
+		<!-- =============== IpDiscoveryService - End =================== -->
+
+		<!-- =============== SessionExpirationService - Begin =========== -->
+		<property name="hazelcast.addon.cluster.expiration.tag">SessionExpirationService</property>
+		<property name="hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name">true</property>
+		<property name="hazelcast.addon.cluster.expiration.key.delimiter">@</property>
+		<!-- Expiration queue drain size. For string keys, a large value can
+			potentially throw stack overflow exceptions due to what appears
+			to be Hazelcast LIKE predicate on OR operator limitations. Default: 100 -->
+		<property name="hazelcast.addon.cluster.expiration.queue.drain-size">200</property>
+
+		<!-- INTERFACE expects key classes to implement the ISessionId interface. -->
+		<property name="hazelcast.addon.cluster.expiration.session.smki_%TAG%">mki1_%TAG%,mki2_%TAG%</property>
+		<property name="hazelcast.addon.cluster.expiration.session.smki_%TAG%.key.type">INTERFACE</property>
+
+		<!-- OBJECT expects key classes with the specified property (getter method). -->
+		<property name="hazelcast.addon.cluster.expiration.session.smko_%TAG%">mko1_%TAG%,mko2_%TAG%</property>
+		<property name="hazelcast.addon.cluster.expiration.session.smko_%TAG%.key.type">OBJECT</property>
+		<property name="hazelcast.addon.cluster.expiration.session.smko_%TAG%.key.property">sessionId</property>
+
+		<!-- CUSTOM expects a predicate class that implements the ISessionIdPredicate 
+			interface. -->
+		<property name="hazelcast.addon.cluster.expiration.session.smkc_%TAG%">mkc1_%TAG%,mkc2_%TAG%</property>
+		<property name="hazelcast.addon.cluster.expiration.session.smkc_%TAG%.key.type">CUSTOM</property>
+		<property name="hazelcast.addon.cluster.expiration.session.smkc_%TAG%.key.predicate">org.hazelcast.addon.expiration.test.CustomPredicate</property>
+
+		<!-- PARTITION_AWARE expects key classes to implement the PartitionAware 
+			interface. It uses PartitionAware.getPartitionKey() as the session ID. -->
+		<property name="hazelcast.addon.cluster.expiration.session.smkp_%TAG%">mkp1_%TAG%,mkp2_%TAG%</property>
+		<property name="hazelcast.addon.cluster.expiration.session.smkp_%TAG%.key.type">PARTITION_AWARE</property>
+
+		<!-- STRING uses string values of key objects, i.e. toString(). It applies 
+			the delimiter to extract the last token in the string value as the session 
+			ID. -->
+		<property name="hazelcast.addon.cluster.expiration.session.smks_%TAG%">mks1_%TAG%,mks2_%TAG%</property>
+		<property name="hazelcast.addon.cluster.expiration.session.smks_%TAG%.key.type">STRING</property>
+		<!-- Enable postfix if data affinity is required. Note that there is a huge 
+			increase in latency if enabled due to LIKE '%sessionId' query that does not 
+			take advantage of key index. -->
+		<!-- <property name="hazelcast.addon.cluster.expiration.string-key.postfix.enabled">false</property> -->
+
+		<!-- OBJECT -->
+		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%">mkp_session_fi_session_data_%TAG%,mkp_session_application_data_%TAG%</property>
+		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.type">OBJECT</property>
+		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.property">sessionId</property>
+		<!-- =============== SessionExpirationService - End ============= -->
+	</properties>
+	<listeners>
+		<!-- IpDiscoveryInitializer is invoked during bootstrap to eagerly conducts
+      IP probing. Without the initializer, the probing is done lazily when the
+      first write operation is detected. -->
+		<listener>
+		org.hazelcast.addon.spi.discovery.IpDiscoveryStartupInitializer
+		</listener>
+		<listener>
+			org.hazelcast.addon.cluster.expiration.SessionExpirationServiceInitializer
+		</listener>
+	</listeners>
+
+	<!-- To use the workspace cluster name, remove the above line and uncomment 
+		the following line. -->
+	<cluster-name>${hazelcast-addon.cluster-name}</cluster-name>
+
+	<management-center scripting-enabled="true" />
+
+	<user-code-deployment enabled="true">
+		<class-cache-mode>ETERNAL</class-cache-mode>
+		<provider-mode>LOCAL_AND_CACHED_CLASSES</provider-mode>
+	</user-code-deployment>
+	<lite-member enabled="false" />
+	<network>
+		<!-- padogrid explicitly assigns the TCP port numbers in order to 
+			launch multiple clusters on the same machine. -->
+		<port auto-increment="false">${hazelcast-addon.tcp.port}</port>
+		<outbound-ports>
+			<!-- Allowed port range when connecting to other nodes. 0 or * means use 
+				system provided port. -->
+			<ports>0</ports>
+		</outbound-ports>
+		<rest-api enabled="true">
+			<endpoint-group name="HEALTH_CHECK" enabled="true" />
+			<endpoint-group name="CLUSTER_READ" enabled="true" />
+			<endpoint-group name="CLUSTER_WRITE" enabled="true" />
+			<endpoint-group name="DATA" enabled="true" />
+			<endpoint-group name="HOT_RESTART" enabled="true" />
+			<endpoint-group name="WAN" enabled="true" />
+		</rest-api>
+		<join>
+			<multicast enabled="false"></multicast>
+			<tcp-ip enabled="true">
+				<members>${hazelcast-addon.tcp.members}</members>
+			</tcp-ip>
+		</join>
+		<socket-interceptor enabled="false" />
+		<ssl enabled="true">
+			<factory-class-name>
+			com.hazelcast.nio.ssl.BasicSSLContextFactory
+			</factory-class-name>
+			<properties>
+				<property name="keyStore">${keyStore}</property>
+				<property name="keyStorePassword">${keyStorePassword}</property>
+				<property name="keyStoreType">${keyStoreType}</property>
+				<property name="trustStore">${trustStore}</property>
+				<property name="trustStorePassword">${trustStorePassword}</property>
+				<property name="trustStoreType">${trustStoreType}</property>
+				<property name="protocol">TLSv1.2</property>
+				<property name="mutualAuthentication">REQUIRED</property>
+			</properties>
+		</ssl>
+	</network>
+
+	<wan-replication name="wan2-to-wan1">
+		<batch-publisher>
+			<cluster-name>wan1</cluster-name>
+			<batch-size>1000</batch-size>
+			<queue-capacity>100000</queue-capacity>
+			<batch-max-delay-millis>1000</batch-max-delay-millis>
+			<max-concurrent-invocations>12</max-concurrent-invocations>
+			<queue-full-behavior>DISCARD_AFTER_MUTATION</queue-full-behavior>
+			<acknowledge-type>ACK_ON_RECEIPT</acknowledge-type>
+			<response-timeout-millis>60000</response-timeout-millis>
+			<sync>
+				<consistency-check-strategy>MERKLE_TREES</consistency-check-strategy>
+			</sync>
+			<discovery-strategies>
+				<discovery-strategy enabled="true" class="org.hazelcast.addon.spi.discovery.IpDiscoveryStrategy">
+					<properties>
+						<!-- tag is used as log prefix and is a part of JMX metric name -->
+						<property name="tag">WanDiscovery-mkp</property>
+						<property name="target-endpoints">localhost:5701,localhost:5702,localhost:5703,localhost:5704,localhost:5705:localhost:5706,localhost:5707,localhost:5708,localhost:5709,localhost:5710</property>
+						<property name="probe-type">ssl</property>
+						<!-- If service-enabled=true, then the probing is done in the dedicated thread.
+                            else if service-enabled=false then the probing is done in the Hazelcast
+                            discovery thread.  Default is false -->
+						<property name="service-enabled">true</property>
+						<!-- service-delay-in-msec applies only if service-enabled=true.
+                            If multiple strategies are listed then the first one configured
+                            overrides others. -->
+						<property name="service-delay-in-msec">30000</property>
+						<!-- connection-timout-in-msec applies only if service-enabled=false -->
+						<property name="connection-timeout-in-msec">200</property>
+						<!-- read-timeout-in-msec only if service-enabled=false -->
+						<property name="read-timeout-in-msec">200</property>
+					</properties>
+				</discovery-strategy>
+			</discovery-strategies>
+		</batch-publisher>
+	</wan-replication>
+
+	<!-- INTERFACE -->
+	<map name="smki_*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<max-idle-seconds>10</max-idle-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+		<entry-listeners>
+			<entry-listener include-value="false">
+				org.hazelcast.addon.cluster.expiration.SessionExpirationListener
+			</entry-listener>
+		</entry-listeners>
+	</map>
+	<map name="mki*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+		<indexes>
+			<index type="HASH">
+				<attributes>
+					<attribute>__key.sessionId</attribute>
+				</attributes>
+			</index>
+		</indexes>
+	</map>
+
+	<!-- OBJECT -->
+	<map name="smko_*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<max-idle-seconds>10</max-idle-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+		<entry-listeners>
+			<entry-listener include-value="false">
+				org.hazelcast.addon.cluster.expiration.SessionExpirationListener
+			</entry-listener>
+		</entry-listeners>
+	</map>
+	<map name="mko*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+		<indexes>
+			<index type="HASH">
+				<attributes>
+					<attribute>__key.sessionId</attribute>
+				</attributes>
+			</index>
+		</indexes>
+	</map>
+
+	<!-- CUSTOM -->
+	<map name="smkc_*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<max-idle-seconds>10</max-idle-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+		<entry-listeners>
+			<entry-listener include-value="false">
+				org.hazelcast.addon.cluster.expiration.SessionExpirationListener
+			</entry-listener>
+		</entry-listeners>
+	</map>
+	<map name="mkc*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+		<indexes>
+			<index type="HASH">
+				<attributes>
+					<attribute>__key.sessionId</attribute>
+				</attributes>
+			</index>
+		</indexes>
+	</map>
+
+	<!-- PARTITION_AWARE -->
+	<map name="smkc_*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<max-idle-seconds>10</max-idle-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+		<entry-listeners>
+			<entry-listener include-value="false">
+				org.hazelcast.addon.cluster.expiration.SessionExpirationListener
+			</entry-listener>
+		</entry-listeners>
+		<partition-strategy>com.hazelcast.partition.strategy.StringAndPartitionAwarePartitioningStrategy</partition-strategy>
+	</map>
+	<map name="mkc*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+		<indexes>
+			<index type="HASH">
+				<attributes>
+					<attribute>__key.partitionKey</attribute>
+				</attributes>
+			</index>
+		</indexes>
+		<partition-strategy>com.hazelcast.partition.strategy.StringAndPartitionAwarePartitioningStrategy</partition-strategy>
+	</map>
+
+	<!-- STRING -->
+	<map name="smks_*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<max-idle-seconds>10</max-idle-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+		<entry-listeners>
+			<entry-listener include-value="false">
+				org.hazelcast.addon.cluster.expiration.SessionExpirationListener
+			</entry-listener>
+		</entry-listeners>
+	</map>
+	<map name="mks*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+	</map>
+
+	<!-- No Plugin -->
+	<map name="smkn_*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<max-idle-seconds>10</max-idle-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+	</map>
+	<map name="mkn*">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<max-idle-seconds>10</max-idle-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan2-to-wan1">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+	</map>
+
+	<executor-service name="hz:wan">
+		<pool-size>16</pool-size>
+	</executor-service>
+
+	<!-- padogrid serialization -->
+	<serialization>
+		<portable-version>1</portable-version>
+		<portable-factories>
+			<portable-factory factory-id="10000">
+			org.hazelcast.addon.hql.impl.PortableFactoryImpl
+			</portable-factory>
+		</portable-factories>
+	</serialization>
+</hazelcast>

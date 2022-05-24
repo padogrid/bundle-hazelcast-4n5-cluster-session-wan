@@ -7,19 +7,20 @@
 
 	<groupId>padogrid.addon</groupId>
 	<!-- @template: Enter your bundle name here -->
-	<artifactId>bundle-hazelcast-template</artifactId>
+	<artifactId>bundle-hazelcast-4n5-cluster-session-wan</artifactId>
 	<packaging>pom</packaging>
         <name>${project.artifactId}</name>
 	<version>1.0.0</version>
-	<!-- @template: Enter your bundle description -->
-	<description>Bundle template</description>
+  <description>
+    This bundle demonstrates the session expiration plugin in a WAN environment. It incorporates the bundled session expiration plugin and the Sorint.lab's IpDiscoveryStrategy plugin.
+  </description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<hazelcast-addon.version>${project.version}</hazelcast-addon.version>
-                <skipTests>true</skipTests>
+    <skipTests>true</skipTests>
 	</properties>
 
 	<repositories>

@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+
+# ========================================================================
+# Copyright (c) 2020 Netcrest Technologies, LLC. All rights reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ========================================================================
+
+SCRIPT_DIR="$(cd -P -- "$(dirname -- "$0")" && pwd -P)"
+. $SCRIPT_DIR/.addonenv.sh
+
+EXECUTABLE="`basename $0`"
+
+if [ "$HELP" == "true" ]; then
+cat <<EOF
+
+NAME
+   $EXECUTABLE - Initialzie this app
+
+SYNOPSIS
+   ./$EXECUTABLE [-lite] [-?]"
+
+DESCRIPTION
+   Initializes this app. After a build (if required), this script must be executed before running
+   other scripts to intialize the app environment.
+
+OPTIONS
+   -lite
+             If specified, then configures this app as a dummy client by disabling Smart Routing and
+             registering the cluster lite-members.
+
+DEFAULT
+   ./$EXECUTABLE
+
+EOF
+   exit
+fi
+
+if [ "$1" == "-lite" ]; then
+   LITE_SPECIFIED="true"
+else
+   LITE_SPECIFIED="false"
+fi
+
+#
+# Create hazelcast-client-mc.xml for 4.x. To be uploaded to the browser.
+#
+# Replace '/' to avoid expansion for the subsequent use.
+if [[ $OS_NAME == CYGWIN* ]]; then
+   APP_DIR2="$(cygpath -w $APP_DIR)"
+   APP_DIR2="${APP_DIR2//\\/\\\\\\\\}"
+else
+   APP_DIR2="${APP_DIR//\//\\/}"
+fi
+
+# Copy all
+cp $APP_DIR/etc/v$HAZELCAST_MAJOR_VERSION_NUMBER/* $APP_DIR/etc/
+
+sed -e "s/<cluster\-name>.*$/<cluster\-name>wan1<\/cluster\-name>/" \
+    $APP_DIR/etc/v$HAZELCAST_MAJOR_VERSION_NUMBER/hazelcast-client.xml > $APP_DIR/etc/hazelcast-client.xml
+
+# Management specifics for Hazelcast 4.x
+if [ $HAZELCAST_MAJOR_VERSION_NUMBER -ge 4 ]; then
+   sed -e "s/\${keyStore}/$APP_DIR2\/etc\/ssl\/client.keystore/" \
+       -e "s/\${keyStorePassword}/$KEYSTORE_PASSWORD/" \
+       -e "s/\${keyStoreType}/pkcs12/" \
+       -e "s/\${trustStore}/$APP_DIR2\/etc\/ssl\/client-trust.keystore/" \
+       -e "s/\${trustStorePassword}/$KEYSTORE_PASSWORD/" \
+       -e "s/\${trustStoreType}/pkcs12/" \
+       -e "s/<cluster\-name>.*$/<cluster\-name>wan1<\/cluster\-name>/" \
+       $APP_DIR/etc/v$HAZELCAST_MAJOR_VERSION_NUMBER/hazelcast-client.xml > $APP_DIR/etc/hazelcast-client-mc.xml
+   sed -e "s/\${keyStore}/$APP_DIR2\/etc\/ssl\/client.keystore/" \
+       -e "s/\${keyStorePassword}/$KEYSTORE_PASSWORD/" \
+       -e "s/\${keyStoreType}/pkcs12/" \
+       -e "s/\${trustStore}/$APP_DIR2\/etc\/ssl\/client-trust.keystore/" \
+       -e "s/\${trustStorePassword}/$KEYSTORE_PASSWORD/" \
+       -e "s/\${trustStoreType}/pkcs12/" \
+       -e "s/<cluster\-name>.*$/<cluster\-name>wan1<\/cluster\-name>/" \
+       $APP_DIR/etc/v$HAZELCAST_MAJOR_VERSION_NUMBER/hazelcast-client-blue.xml > $APP_DIR/etc/hazelcast-client-blue-mc.xml
+   sed -e "s/\${keyStore}/$APP_DIR2\/etc\/ssl\/client.keystore/" \
+       -e "s/\${keyStorePassword}/$KEYSTORE_PASSWORD/" \
+       -e "s/\${keyStoreType}/pkcs12/" \
+       -e "s/\${trustStore}/$APP_DIR2\/etc\/ssl\/client-trust.keystore/" \
+       -e "s/\${trustStorePassword}/$KEYSTORE_PASSWORD/" \
+       -e "s/\${trustStoreType}/pkcs12/" \
+       -e "s/<cluster\-name>.*$/<cluster\-name>wan1<\/cluster\-name>/" \
+       $APP_DIR/etc/v$HAZELCAST_MAJOR_VERSION_NUMBER/hazelcast-client-green.xml > $APP_DIR/etc/hazelcast-client-green-mc.xml
+fi 
+
+# If lite-member then disable smart routing and bump up the port numbers
+if [ "$LITE_SPECIFIED" == "true" ]; then
+   sed -i$__SED_BACKUP \
+       -e 's/<network>/<network>'\\n'\t\t<smart-routing>false<\/smart-routing>/' \
+       -e 's/5701/5703/' -e 's/5702/5704/' \
+       $APP_DIR/etc/hazelcast-client.xml
+   echo "App initialized with lite-members. Smart-routing disabled."
+else
+   echo "App initialized with regular members. Smart-routing enabled."
+fi

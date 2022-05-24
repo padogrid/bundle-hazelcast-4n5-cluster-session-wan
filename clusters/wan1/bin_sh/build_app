@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$(cd -P -- "$(dirname -- "$0")" && pwd -P)"
+. $SCRIPT_DIR/.addonenv.sh
+
+EXECUTABLE="`basename $0`"
+
+if [ "$HELP" == "true" ]; then
+cat <<EOF
+
+NAME
+   $EXECUTABLE - Build WAN the test harness environment
+
+SYNOPSIS
+   $EXECUTABLE [-?]
+
+DESCRIPTION
+   Builds the WAN test harness environment by generating SSL keystores and deploying them to
+   the pertinent components.
+
+DEFAULT
+   ./$EXECUTABLE
+
+EOF
+   exit
+fi
+
+
+. ./setenv_keystore.sh
+./create_keystores
+
+
+# Deploy cluster keystores to the cluster directories
+echo "Deploying cluster keystores..."
+for NUM in $(seq 1 $CLUSTER_COUNT); do
+   CLUSTER_ALIAS=$CLUSTER_PREFIX$NUM
+   if [ "$CLUSTER" == "$CLUSTER_ALIAS" ]; then
+      continue;
+   fi
+   CLUSTER_SSL_DIR="$CLUSTERS_DIR/$CLUSTER_ALIAS/etc/ssl"
+   if [ ! -d "$CLUSTER_SSL_DIR" ]; then
+      mkdir -p "$CLUSTER_SSL_DIR"
+   fi
+   cp $SSL_DIR/$CLUSTER_PREFIX.keystore $CLUSTER_SSL_DIR/
+   cp $SSL_DIR/$CLUSTER_PREFIX-trust.keystore $CLUSTER_SSL_DIR/
+done
+
+# Deploy client keystores to the client directories
+echo "Deploying client keystores..."
+for NUM in $(seq 1 $CLIENT_COUNT); do
+   CLIENT_ALIAS=$CLIENT_PREFIX$NUM
+   CLUSTER_ALIAS=$CLUSTER_PREFIX$NUM
+   CLIENT_SSL_DIR="$APPS_DIR/perf_test_$CLUSTER_ALIAS/etc/ssl"
+   if [ ! -d "$CLIENT_SSL_DIR" ]; then
+      mkdir -p "$CLIENT_SSL_DIR"
+   fi
+   cp $SSL_DIR/$CLIENT_ALIAS.keystore $CLIENT_SSL_DIR/$CLIENT_PREFIX.keystore
+   cp $SSL_DIR/$CLIENT_ALIAS-trust.keystore $CLIENT_SSL_DIR/$CLIENT_PREFIX-trust.keystore
+done
+
+# Check if the IpDiscoveryStrategy plugin is included in the plugins directory
+JAR_FOUND="false"
+JAR_FILE=sorintlab-hazelcast-spi-*.jar
+PLUGINS="$CLUSTER_DIR/plugins/*.jar"
+if [ -d "$CLUSTER_DIR/plugins" ]; then
+   pushd $CLUSTER_DIR/plugins > /dev/null 2>&1
+   for i in *.jar; do
+      if [ -f "$i" ] && [[ "$i" == "sorintlab-hazelcast-spi-"* ]]; then
+         JAR_FOUND="true"
+         JAR_FILE=$i
+      fi
+   done
+   popd > /dev/null 2>&1
+fi
+
+pushd $CLUSTER_DIR > /dev/null 2>&1
+if [ "$JAR_FOUND" == "true" ]; then
+   # Copy the included IpDiscoveryStrategy plugin to the workspace
+   echo "Copying plugins/$JAR_FILE to $PADOGRID_WORKSPACE/plugins/..."
+   cp plugins/$JAR_FILE $PADOGRID_WORKSPACE/plugins/
+else
+   # Download and build the IpDiscoveryStrategy plugin.
+   echo "Downloading and building IpDiscoveryStrategy..."
+   echo git clone https://github.com/sorint-lab-us/hazelcast-spi.git
+   git clone https://github.com/sorint-lab-us/hazelcast-spi.git
+   pushd hazelcast-spi > /dev/null 2>&1
+   git pull
+   mvn clean package -DskipTests
+   echo "Deploying target/$JAR_FILE to $PADOGRID_WORKSPACE/plugins/..."
+   rm $PADOGRID_WORKSPACE/plugins/$JAR_FILE
+   cp target/$JAR_FILE $PADOGRID_WORKSPACE/plugins/
+   popd > /dev/null 2>&1
+fi
+# Download and build the session expiration plugin
+echo "Downloading and building session-expiration-service..."
+echo git clone https://github.com/padogrid/bundle-hazelcast-4n5-cluster-session.git
+git clone https://github.com/padogrid/bundle-hazelcast-4n5-cluster-session.git
+pushd bundle-hazelcast-4n5-cluster-session/clusters/session > /dev/null 2>&1
+git pull
+mvn clean package -DskipTests
+echo "Deploying bundle-hazelcast-4n5-cluster-session/clusters/session/lib/*.jar to $PADOGRID_WORKSPACE/plugins/..."
+cp lib/*.jar $PADOGRID_WORKSPACE/plugins/
+popd > /dev/null 2>&1
+popd > /dev/null 2>&1
+
+#
+# k8s
+#
+
+# Download the oc_helm_wan bundle
+if [ ! -d "$PADOGRID_WORKSPACE/k8s/oc_helm_wan" ]; then
+   install_bundle -quiet -download bundle-hazelcast-3n4n5-k8s-oc_helm_wan
+fi
+
+if [ ! -f "$K8S_DIR/oc_helm_wan/bin_sh/build_app_org" ]; then
+   mv "$K8S_DIR/oc_helm_wan/bin_sh/build_app" "$K8S_DIR/oc_helm_wan/bin_sh/build_app_org"
+   cp "$APP_DIR/k8s/build_app" "$K8S_DIR/oc_helm_wan/bin_sh/build_app"
+fi
+
+echo "Build complete."
+echo ""
+

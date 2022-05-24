@@ -1,1 +1,1 @@
-This bundle serves as a template for creating a new Hazelcast bundle. Run `show_bundle bundle-hazelcast-template` to see instructions.
+This bundle demonstrates the session expiration plugin in a WAN environment. It incorporates the bundled [session expiration plugin](https://github.com/padogrid/bundle-hazelcast-4n5-cluster-session.git) and the Sorint.lab's [`IpDiscoveryStrategy`](https://github.com/sorint-lab-us/hazelcast-spi) plugin.
