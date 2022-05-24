@@ -80,7 +80,7 @@ if [ $MEMBER_NUM_NO_LEADING_ZERO -gt $FULL_MEMBER_COUNT ]; then
    CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-lite.yaml
 else
    # YAML
-   #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast.yaml
+   CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast.yaml
    #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-get.yaml
    #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-session-metadata-delete.yaml
    #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-session-metadata-get.yaml
@@ -89,5 +89,5 @@ else
    #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast.xml
    #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-get.xml
    #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-session-metadata-delete.xml
-   CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-session-metadata-get.xml
+   #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-session-metadata-get.xml
 fi
