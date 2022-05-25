@@ -8,10 +8,10 @@ Install the bundles as workspace by executing one of the following:
 
 ```bash
 # To run
-install_bundle -user sorint-lab-us -download -workspace bundle-hazelcast-4n5-cluster-session-wan
+install_bundle -download -workspace bundle-hazelcast-4n5-cluster-session-wan
 
 # To run and/or check in
-install_bundle -user sorint-lab-us -checkout bundle-hazelcast-4n5-cluster-session-wan
+install_bundle -checkout bundle-hazelcast-4n5-cluster-session-wan
 ```
 
 ## Use Case
