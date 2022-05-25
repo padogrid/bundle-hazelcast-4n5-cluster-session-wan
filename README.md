@@ -232,7 +232,7 @@ Open Management Center in two separate browsers. The first one to monitor **wan1
 
 ![Empty](images/empty.png)
 
-### Test Case 1. Session Replication
+### Test Case 1. Session Replication by Key Type
 
 In this test case, we enter entries into the primary map and its relevant maps to observe data replication and expiration from **wan1** to **wan2**.
 
@@ -280,9 +280,23 @@ Now, make the session active by repeatedly updating the primary map within the 1
 
 By updating the primary map, all the maps in both clusters retain the entries. As soon as idle for more than 10 seconds, both clusters will remove the session entries from all the maps.
 
-### Test Case 2. Ingestion
+### Test Case 2. Ingestion by Key Type
 
-In the previous test case, we added one entry in each map and observed the entries getting replicated over the WAN and eventually expired in both clusters when the session sits idle for more than 10 seconds. In this test case, we perform load tests but ingesting a large number of entries.
+In the previous test case, we added one entry in each map and observed the entries getting replicated over the WAN and eventually expired in both clusters when the session sits idle for more than 10 seconds. In this test case, we perform load tests but we ingest a large number of entries.
+
+The session expiration plugin supports several key types which determine how you will be creating keys. For example, the key type of `STRING` expects two tokens in the key separated by the delimiter. The default delimiter is "@". If the session ID is placed before the delimiter then it is called **prefix**. Likewise, if the session ID placed after the delimiter is called **postfix**. With this convention in place, the session expiration plugin extracts the session ID from the primary map keys and searches the keys to remove from the relevant maps when the primary map entries expire. This search is done by executing a `LIKE` predicate on each relevant map for each primary map key that expires. As you can guess, this is an expensive operation, especially, if the session ID is postfix. The postfix session ID executes the predicate `LIKE %session_id` and the prefix session ID executes the predicate, `LIKE session_id%`. For this reason, the default session ID placement is **prefix**.
+
+Unlike the `STRING` key type, other key types do not build and execute query predicates and thus are significantly less expensive. This is because they require the key class to provide the session ID. For example, the `INTERFACE` key type expects the key class to implement `ISessionId.getSessionId()` and `PARTITION_AWARE` expects the `PartitionAware`.getPartitionKey()` to return the session ID.
+
+The `test_session_ingestion` usage provides a comprehensive list of examples that you can try.
+
+```bash
+cd_app perf_test_wan1/bin_sh
+# Display the usage
+./test_session_ingestion -?
+```
+
+Let's ingest entries with `STRING` keys.
 
 ```bash
 cd_app perf_test_wan1/bin_sh
@@ -304,11 +318,90 @@ cd_app perf_test_wan1/bin_sh
 ./test_session_ingestion -type STRING -primary smks_EN01 -relevant mks1_EN01,mks2_EN01 -count 10000
 ```
 
-#### Prometheus/Grafana
+### Test Case 3. Session Replication by `SessionMetadata`
+
+In the previous test cases, we had the session expiration plugin to automatically search and remove the relevant entries. We can improve the performance by removing the search step. This is done by the application to provide the metadata that includes the relevant map names and their keys in the primary map key objects. The session expiration plugin provides the `SessionMetadata` class, which you can use in creating values (not keys) for the primary map. This class provides the following setter method for including the metadata.
+
+```java
+public void addRelevantKey(String mapName, Object key);
+```
+
+Let's experiment `SessionMetadata`. Before we begin, we must first reconfigure the Hazelcast clusters by specifying the corresponding configuration files. Edit the `bin_sh/setenv.sh` files as follows.
+
+```bash
+# Edit wan1 setenv.sh
+cd_app wan1/bin_sh
+vi setenv.sh
+
+# Edit wan2 setenv.sh
+cd_app wan2/bin_sh
+vi setenv.sh
+```
+
+In each `setenv.sh` file, set the following.
+
+```bash
+CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-session-metadata-delete.yaml
+```
+
+Restart the clusters.
+
+```bash
+# Stop all clusters in the current workspace
+stop_workspace
+
+# Start all clusters in the current workspace
+start_workspace -quiet
+```
+
+Once the clusters are running, execute the following command, which puts an entry to the primary map, `smks_EN01`, and two (2) entries to the relevant maps, `mks1_EN01` and `mks2_EN01`. The primary map entry has a `SessionMetadata` value object containing the relevent map information.
+
+```bash
+./test_session_ingestion -type STRING -primary smks_EN01 -relevant mks1_EN01,mks2_EN01 -entry PUT -session s1 -attribute a1 -metadata true
+```
+
+Observe the entries in all maps expire after 10 seconds. 
+
+Now, make the session active by repeatedly updating the primary map within the 10 second window.
+
+```bash
+# PUT: Insert entries
+./test_session_ingestion -type STRING -primary smks_EN01 -relevant mks1_EN01,mks2_EN01 -entry PUT -session s1 -attribute a1 -metadata true
+
+# RESET: wait >10 seconds and execute
+./test_session_ingestion -type STRING -primary smks_EN01 -relevant mks1_EN01,mks2_EN01 -entry RESET -session s1 -attribute a1 -metadata true
+# RESET: repeat within 10 seconds
+./test_session_ingestion -type STRING -primary smks_EN01 -relevant mks1_EN01,mks2_EN01 -entry RESET -session s1 -attribute a1 -metadata true
+```
+
+:pencil2: The `-entry RESET` option updates the primary map only. It does not update the the relevant maps. It updates `SessionMetadata` in the primary map with the specified relevant map names. 
+
+### Test Case 4. Ingestion by `SessionMetadata`
+
+The `test_session_ingestion` command puts `SessionMetadata` values for the option, `-entry INGEST`, regardless of the key type, i.e., `-type`. You can specify any key type and will get the same results. This is because the key type does not apply since the primary map values now provide the relevant data information.
+
+Let's ingest `STRING` keys.
+
+```bash
+./test_session_ingestion -type STRING -primary smks_EN01 -relevant mks1_EN01,mks2_EN01
+```
+
+The above command puts 100 entries in each map. Try again with a larger number of entries. The following puts 10,000 entries.
+
+```bash
+cd_app perf_test_wan1/bin_sh
+./test_session_ingestion -type STRING -primary smks_EN01 -relevant mks1_EN01,mks2_EN01 -count 10000
+```
+
+## Prometheus/Grafana
 
 There are two (2) dashboards included in the bundle: *wan1* and *wan2*. You can find these dashboards under the **SessionExpiration** folder. You can import the dashboards by following in the instructions described in the [Startup Sequence](#startup-sequence) section. The following screenshot shows the *wan1* dashboard.
 
 ![Grafana WAN1](images/grafana-wan1.png)
+
+The screenshot shows the queue size steadily increasing. This is expected as you conduct load tests with a small value of `idle-time-seconds`. In our test cases, it is set for 10 seconds so that we can quicly observe expirations without waiting for a long period of time. This also means while ingesting data, the map entries are being expired at the same rate, leading to the steady queue size increase.
+
+The current session expiration plugin spawns a single thread to handle the blocking queue. It drains the queue a batch at a time as fast as it can. It iterates each batch of events and performs either the `delete` or `get` operation depending on the type of `SessionExpirationService` is set in the configuration file. This step generates additional events within Hazelcast and may consume a significant amount of system resources, in particular, CPUs. Unfortunately, Hazelcast does not provide the API that simply reset the idle timeout and this is all we can do for now. One improvement that we can make is to add support for a thread pool that can be used to spawn more threads. Stay tuned...
 
 ## Teardown
 
