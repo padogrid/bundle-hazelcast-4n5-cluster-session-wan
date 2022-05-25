@@ -1,6 +1,6 @@
 # Session Expiration in WAN Environment
 
-This bundle demonstrates the session expiration plugin in a WAN environment. It incorporates the bundled [session expiration plugin](https://github.com/padogrid/bundle-hazelcast-4n5-cluster-session.git) and the Sorint.lab's `IpDiscoveryStrategy` plugin.
+This bundle demonstrates the session expiration plugin in a WAN environment. It incorporates the session expiration plugin included in [bundle-hazelcast-4n5-cluster-session](https://github.com/padogrid/bundle-hazelcast-4n5-cluster-session.git) and the Sorint.lab's `IpDiscoveryStrategy` plugin.
 
 ## Installing Bundle
 
