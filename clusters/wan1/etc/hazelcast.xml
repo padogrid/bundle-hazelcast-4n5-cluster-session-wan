@@ -397,24 +397,6 @@ IMPORTANT:
 		<per-entry-stats-enabled>true</per-entry-stats-enabled>
 	</map>
 	
-	<map name="mytest">
-		<eviction eviction-policy="LRU" max-size-policy="FREE_NATIVE_MEMORY_PERCENTAGE" size="20" />
-		<time-to-live-seconds>3600</time-to-live-seconds>
-		<merkle-tree enabled="true">
-			<depth>10</depth>
-		</merkle-tree>
-		<wan-replication-ref name="wan1-to-wan2">
-			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
-		</wan-replication-ref>
-		<per-entry-stats-enabled>true</per-entry-stats-enabled>
-		<in-memory-format>NATIVE</in-memory-format>
-	</map>
-	
-	
-	<native-memory allocator-type="POOLED" enabled="true">
-		<size unit="MEGABYTES" value="512"/>
-	</native-memory>
-
 	<executor-service name="hz:wan">
 		<pool-size>16</pool-size>
 	</executor-service>
