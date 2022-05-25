@@ -159,6 +159,7 @@ IMPORTANT:
 
 	<wan-replication name="wan2-to-wan1">
 		<batch-publisher>
+			<publisher-id>location1</publisher-id>
 			<cluster-name>wan1</cluster-name>
 			<batch-size>1000</batch-size>
 			<queue-capacity>100000</queue-capacity>

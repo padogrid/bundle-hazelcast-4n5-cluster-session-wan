@@ -159,6 +159,7 @@ IMPORTANT:
 
 	<wan-replication name="wan1-to-wan2">
 		<batch-publisher>
+			<publisher-id>location2</publisher-id>
 			<cluster-name>wan2</cluster-name>
 			<batch-size>1000</batch-size>
 			<queue-capacity>100000</queue-capacity>
@@ -174,7 +175,7 @@ IMPORTANT:
 				<discovery-strategy enabled="true" class="org.hazelcast.addon.spi.discovery.IpDiscoveryStrategy">
 					<properties>
 						<!-- tag is used as log prefix and is a part of JMX metric name -->
-						<property name="tag">WanDiscovery-mkp</property>
+						<property name="tag">WanDiscovery</property>
 						<property name="target-endpoints">localhost:5801,localhost:5802,localhost:5803,localhost:5804,localhost:5805,localhost:5806,localhost:5807,localhost:5808,localhost:5809,localhost:5810</property>
 						<property name="probe-type">ssl</property>
 						<!-- If service-enabled=true, then the probing is done in the dedicated thread.

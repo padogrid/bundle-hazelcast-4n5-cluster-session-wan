@@ -61,11 +61,6 @@ hazelcast:
     # delimiter to extract the last token in the string value as the session ID.
     hazelcast.addon.cluster.expiration.session.smks_%TAG%: mks1_%TAG%,mks2_%TAG%
     hazelcast.addon.cluster.expiration.session.smks_%TAG%.key.type: STRING
-
-    # OBJECT
-    hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%: mkp_session_fi_session_data_%TAG%,mkp_session_application_data_%TAG%
-    hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.type: OBJECT
-    hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.property: sessionId
     # ----------- SessionExpirationService - End -------------------
 
   listeners:
@@ -133,7 +128,7 @@ hazelcast:
   wan-replication:
     wan1-to-wan2:
       batch-publisher:
-        location2-mkp:
+        location2:
           cluster-name: wan2
           batch-size: 1000
           queue-capacity: 100000
@@ -150,7 +145,7 @@ hazelcast:
                 enabled: true
                 properties:
                   # tag is used as log prefix and is a part of JMX metric name
-                  tag: WanDiscovery-mkp
+                  tag: WanDiscovery
                   target-endpoints: 192.168.2.11-50,localhost:5801,localhost:5802,localhost:5803,localhost:5804,localhost:5805,localhost:5806,localhost:5807,localhost:5808,localhost:5809,localhost:5810,localhost:5811,localhost:5810,localhost:5812,localhost:5810,localhost:5813,localhost:5814,localhost:5815
                   probe-type: ssl
                   # If service-enabled=true, then the probing is done in the dedicated thread.

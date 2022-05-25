@@ -70,11 +70,6 @@ hazelcast:
     # increase in latency if enabled due to LIKE '%sessionId' query that
     # does not take advantage of key index.
     #hazelcast.addon.cluster.expiration.string-key.postfix.enabled: false
-
-    # OBJECT
-    hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%: mkp_session_fi_session_data_%TAG%,mkp_session_application_data_%TAG%
-    hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.type: OBJECT
-    hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.property: sessionId
     # ----------- SessionExpirationService - End -------------------
 
   listeners:
@@ -159,7 +154,7 @@ hazelcast:
                 enabled: true
                 properties:
                   # tag is used as log prefix and is a part of JMX metric name
-                  tag: WanDiscovery-mkp
+                  tag: WanDiscovery
                   target-endpoints: localhost:5701,localhost:5702,localhost:5703,localhost:5704,localhost:5705:localhost:5706,localhost:5707,localhost:5708,localhost:5709,localhost:5710
                   probe-type: ssl
                   # If service-enabled=true, then the probing is done in the dedicated thread.

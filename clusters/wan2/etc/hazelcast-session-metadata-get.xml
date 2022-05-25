@@ -86,11 +86,6 @@ IMPORTANT:
 			increase in latency if enabled due to LIKE '%sessionId' query that does not 
 			take advantage of key index. -->
 		<!-- <property name="hazelcast.addon.cluster.expiration.string-key.postfix.enabled">false</property> -->
-
-		<!-- OBJECT -->
-		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%">mkp_session_fi_session_data_%TAG%,mkp_session_application_data_%TAG%</property>
-		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.type">OBJECT</property>
-		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.property">sessionId</property>
 		<!-- =============== SessionExpirationService - End ============= -->
 	</properties>
 	<listeners>
@@ -159,6 +154,7 @@ IMPORTANT:
 
 	<wan-replication name="wan2-to-wan1">
 		<batch-publisher>
+			<publisher-id>location1</publisher-id>
 			<cluster-name>wan1</cluster-name>
 			<batch-size>1000</batch-size>
 			<queue-capacity>100000</queue-capacity>
@@ -174,7 +170,7 @@ IMPORTANT:
 				<discovery-strategy enabled="true" class="org.hazelcast.addon.spi.discovery.IpDiscoveryStrategy">
 					<properties>
 						<!-- tag is used as log prefix and is a part of JMX metric name -->
-						<property name="tag">WanDiscovery-mkp</property>
+						<property name="tag">WanDiscovery</property>
 						<property name="target-endpoints">localhost:5701,localhost:5702,localhost:5703,localhost:5704,localhost:5705:localhost:5706,localhost:5707,localhost:5708,localhost:5709,localhost:5710</property>
 						<property name="probe-type">ssl</property>
 						<!-- If service-enabled=true, then the probing is done in the dedicated thread.

@@ -53,21 +53,34 @@ This article provides instructions for testing the plugin in a local environment
 
 ## Installation Steps
 
-This bundle has been configured to run full members (data nodes) and lite-members (compute nodes). By default, the first two members are full members and any additional members added thereafter are configured as lite-members. This setting is configurable in the each cluster's `bin_sh/setenv.sh` file. 
-
-:pencil2: *If you want to increase the number of full members then set the `FULL_MEMBER_COUNT` environment variable in `bin_sh/setenv.sh` for both `wan1` and `wan2` clusters.*
-
 First, switch into the installed workspace:
 
 ```bash
 switch_workspace bundle-hazelcast-4n5-cluster-session-wan
 ```
 
-Once in the workspace, select one of the initialization options below.
+This bundle builds the test enviroment based on the Hazelcast and Management versions in your workspace. Make sure your workspace has been configured with the desired versions before building the demo environment. You can check the current workspace versions by running `show_products` and update versions by running `update_products` as shown below.
+
+```bash
+# List current workspace product versions
+show_products
+
+# If the desired versions are not listed then install
+install_padogrid -product hazelcast-enterprise
+install_padogrid -product hazelcast-mc
+
+# Update hazelcast enterprise and managment center
+update_products -hazelcast-enterprise
+update_products -hazelcast-mc
+```
+
+This bundle has been configured to run full members (data nodes) and lite-members (compute nodes). By default, the first two members are full members and any additional members added thereafter are configured as lite-members. This setting is configurable in the each cluster's `bin_sh/setenv.sh` file. 
+
+:pencil2: *If you want to increase the number of full members then set the `FULL_MEMBER_COUNT` environment variable in `bin_sh/setenv.sh` for both `wan1` and `wan2` clusters.*
+
+Please select one of the initialization options below.
 
 :pencil2: *You can ignore keytool errors which will be shown if you have already run the `build_app` script previously.*
-
-:pencil2: *This bundle builds the test enviroment based on the Hazelcast and Management versions in your workspace. Make sure your workspace has been configured with the desired versions before building the demo environment.*
 
 ### Initialization Option 1. Run Full Members with Smart Routing Enabled
 

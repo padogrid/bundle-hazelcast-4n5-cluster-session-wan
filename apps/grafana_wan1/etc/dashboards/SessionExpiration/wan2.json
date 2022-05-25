@@ -1,0 +1,554 @@
+{
+  "dashboard": {
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "${DATASOURCE}",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "datasource": "${DATASOURCE}",
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 22,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "com_hazelcast_SessionExpirationService_QueueSize{exported_instance=\"_hzInstance_1_wan2\"}",
+            "refId": "A"
+          }
+        ],
+        "title": "SessionExpirationService Queue Size",
+        "type": "timeseries"
+      },
+      {
+        "datasource": "${DATASOURCE}",
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "max": 15,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 4,
+          "x": 0,
+          "y": 8
+        },
+        "id": 11,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "/^Dead$/",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "8.5.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_LiveTargetEndpointCount{instance=\"localhost:8191\",tag=\"WanDiscovery\"}",
+            "interval": "",
+            "legendFormat": "Dead",
+            "refId": "A"
+          }
+        ],
+        "title": "WAN: Live Endpoints",
+        "type": "gauge"
+      },
+      {
+        "datasource": "${DATASOURCE}",
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "max": 15,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 4,
+          "x": 4,
+          "y": 8
+        },
+        "id": 16,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "/^Dead$/",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "8.5.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_DeadTargetEndpointCount{instance=\"localhost:8191\",tag=\"WanDiscovery\"}",
+            "interval": "",
+            "legendFormat": "Dead",
+            "refId": "A"
+          }
+        ],
+        "title": "WAN: Dead Endpoints",
+        "type": "gauge"
+      },
+      {
+        "datasource": "${DATASOURCE}",
+        "description": "",
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "yellow",
+                  "value": null
+                }
+              ]
+            },
+            "unit": "none"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 4,
+          "x": 8,
+          "y": 8
+        },
+        "id": 12,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "/^Dead$/",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "8.5.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_TargetEndpointCount{instance=\"localhost:8191\",tag=\"WanDiscovery\"}",
+            "interval": "",
+            "legendFormat": "Dead",
+            "refId": "A"
+          }
+        ],
+        "title": "WAN: All Endpoints",
+        "type": "gauge"
+      },
+      {
+        "datasource": "${DATASOURCE}",
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 1000
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
+        "id": 18,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "8.5.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "com_hazelcast_Metrics_outboundQueueSize{exported_instance=\"_hzInstance_1_wan2\", tag0=\"\\\"publisherId=location1\\\"\"}",
+            "interval": "",
+            "legendFormat": "{{instance}}",
+            "refId": "A"
+          }
+        ],
+        "title": "WAN: Outbound Queue Size",
+        "type": "gauge"
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "${DATASOURCE}",
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 0,
+          "y": 13
+        },
+        "hiddenSeries": false,
+        "id": 4,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_DeadTargetEndpointCount{instance=\"localhost:8191\", tag=\"WanDiscovery\"}",
+            "interval": "",
+            "legendFormat": "Dead",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_LiveTargetEndpointCount{instance=\"localhost:8191\", tag=\"WanDiscovery\"}",
+            "interval": "",
+            "legendFormat": "Live",
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_TargetEndpointCount{instance=\"localhost:8191\", tag=\"WanDiscovery\"}",
+            "interval": "",
+            "legendFormat": "All",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [],
+        "timeRegions": [],
+        "title": "WAN: Endpoints",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "mode": "time",
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:142",
+            "format": "short",
+            "logBase": 1,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:143",
+            "format": "short",
+            "logBase": 1,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      },
+      {
+        "aliasColors": {},
+        "bars": false,
+        "dashLength": 10,
+        "dashes": false,
+        "datasource": "${DATASOURCE}",
+        "fill": 1,
+        "fillGradient": 0,
+        "gridPos": {
+          "h": 9,
+          "w": 12,
+          "x": 12,
+          "y": 13
+        },
+        "hiddenSeries": false,
+        "id": 19,
+        "legend": {
+          "avg": false,
+          "current": false,
+          "max": false,
+          "min": false,
+          "show": true,
+          "total": false,
+          "values": false
+        },
+        "lines": true,
+        "linewidth": 1,
+        "nullPointMode": "null",
+        "options": {
+          "alertThreshold": true
+        },
+        "percentage": false,
+        "pluginVersion": "8.5.3",
+        "pointradius": 2,
+        "points": false,
+        "renderer": "flot",
+        "seriesOverrides": [],
+        "spaceLength": 10,
+        "stack": false,
+        "steppedLine": false,
+        "targets": [
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_DeadTargetEndpointCount{instance=\"localhost:8191\", tag=\"WanDiscovery\"}",
+            "interval": "",
+            "legendFormat": "Dead",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_LiveTargetEndpointCount{instance=\"localhost:8191\", tag=\"WanDiscovery\"}",
+            "interval": "",
+            "legendFormat": "Live",
+            "refId": "B"
+          },
+          {
+            "datasource": {
+              "type": "prometheus",
+              "uid": "-ifwfqX7k"
+            },
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_TargetEndpointCount{instance=\"localhost:8191\", tag=\"WanDiscovery\"}",
+            "interval": "",
+            "legendFormat": "All",
+            "refId": "C"
+          }
+        ],
+        "thresholds": [],
+        "timeRegions": [],
+        "title": "WAN: Endpoints",
+        "tooltip": {
+          "shared": true,
+          "sort": 0,
+          "value_type": "individual"
+        },
+        "type": "graph",
+        "xaxis": {
+          "mode": "time",
+          "show": true,
+          "values": []
+        },
+        "yaxes": [
+          {
+            "$$hashKey": "object:142",
+            "format": "short",
+            "logBase": 1,
+            "show": true
+          },
+          {
+            "$$hashKey": "object:143",
+            "format": "short",
+            "logBase": 1,
+            "show": true
+          }
+        ],
+        "yaxis": {
+          "align": false
+        }
+      }
+    ],
+    "refresh": "5s",
+    "schemaVersion": 36,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-6h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "wan2",
+    "weekStart": ""
+  },
+  "folderId": "${FOLDER_ID}",
+  "overWrite": false
+}

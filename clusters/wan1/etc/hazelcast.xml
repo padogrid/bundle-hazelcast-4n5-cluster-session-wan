@@ -31,7 +31,7 @@ IMPORTANT:
 ******************************************************************************* -->
 
 <hazelcast xmlns="http://www.hazelcast.com/schema/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.hazelcast.com/schema/config
-	http://www.hazelcast.com/schema/config/hazelcast-config-4.2.xsd">
+	http://www.hazelcast.com/schema/config/hazelcast-config-5.1.xsd">
 
 	<properties>
 		<property name="hazelcast.phone.home.enabled">false</property>
@@ -86,11 +86,6 @@ IMPORTANT:
 			increase in latency if enabled due to LIKE '%sessionId' query that does not 
 			take advantage of key index. -->
 		<!-- <property name="hazelcast.addon.cluster.expiration.string-key.postfix.enabled">false</property> -->
-
-		<!-- OBJECT -->
-		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%">mkp_session_fi_session_data_%TAG%,mkp_session_application_data_%TAG%</property>
-		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.type">OBJECT</property>
-		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.property">sessionId</property>
 		<!-- =============== SessionExpirationService - End ============= -->
 	</properties>
 	<listeners>
@@ -159,6 +154,7 @@ IMPORTANT:
 
 	<wan-replication name="wan1-to-wan2">
 		<batch-publisher>
+			<publisher-id>location2</publisher-id>
 			<cluster-name>wan2</cluster-name>
 			<batch-size>1000</batch-size>
 			<queue-capacity>100000</queue-capacity>
@@ -174,7 +170,7 @@ IMPORTANT:
 				<discovery-strategy enabled="true" class="org.hazelcast.addon.spi.discovery.IpDiscoveryStrategy">
 					<properties>
 						<!-- tag is used as log prefix and is a part of JMX metric name -->
-						<property name="tag">WanDiscovery-mkp</property>
+						<property name="tag">WanDiscovery</property>
 						<property name="target-endpoints">localhost:5801,localhost:5802,localhost:5803,localhost:5804,localhost:5805,localhost:5806,localhost:5807,localhost:5808,localhost:5809,localhost:5810,localhost</property>
 						<property name="probe-type">ssl</property>
 						<!-- If service-enabled=true, then the probing is done in the dedicated thread.
@@ -400,6 +396,24 @@ IMPORTANT:
 		</wan-replication-ref>
 		<per-entry-stats-enabled>true</per-entry-stats-enabled>
 	</map>
+	
+	<map name="mytest">
+		<eviction eviction-policy="LRU" max-size-policy="FREE_NATIVE_MEMORY_PERCENTAGE" size="20" />
+		<time-to-live-seconds>3600</time-to-live-seconds>
+		<merkle-tree enabled="true">
+			<depth>10</depth>
+		</merkle-tree>
+		<wan-replication-ref name="wan1-to-wan2">
+			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
+		</wan-replication-ref>
+		<per-entry-stats-enabled>true</per-entry-stats-enabled>
+		<in-memory-format>NATIVE</in-memory-format>
+	</map>
+	
+	
+	<native-memory allocator-type="POOLED" enabled="true">
+		<size unit="MEGABYTES" value="512"/>
+	</native-memory>
 
 	<executor-service name="hz:wan">
 		<pool-size>16</pool-size>
