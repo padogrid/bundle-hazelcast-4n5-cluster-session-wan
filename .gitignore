@@ -53,3 +53,4 @@ results
 tmp
 templates
 export
+!clusters/wan1/plugins

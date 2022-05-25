@@ -24,10 +24,8 @@ EOF
    exit
 fi
 
-
 . ./setenv_keystore.sh
 ./create_keystores
-
 
 # Deploy cluster keystores to the cluster directories
 echo "Deploying cluster keystores..."
@@ -118,4 +116,3 @@ fi
 
 echo "Build complete."
 echo ""
-
