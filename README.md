@@ -36,7 +36,7 @@ The following is a list of optional software. They are not required for running 
 
 ```console
 apps
-├── grafana_wan1
+├── grafana
 ├── perf_test_wan1
 └── perf_test_wan2
 
@@ -184,7 +184,7 @@ From the management center, create the wan1 and wan2 views by uploading the abov
 ```bash
 export PROMETHEUS_HOME=<prometheus home path>
 export PATH=$PROMETHEUS_HOME:$PATH
-cd_app grafana_wan1
+cd_app grafana
 prometheus --web.enable-admin-api --config.file=etc/prom-hazelcast.yml
 ```
 
@@ -199,7 +199,7 @@ grafana-server -homepath $GRAFANA_HOME
 6\. Import Grafana dashboards
 
 ```bash
-cd_app grafana_wan1/bin_sh
+cd_app grafana/bin_sh
 ./import_folder -all
 ```
 
