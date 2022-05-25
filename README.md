@@ -4,7 +4,7 @@ This bundle demonstrates the session expiration plugin in a WAN environment. It 
 
 ## Installing Bundle
 
-Install the bundles as workspace by executing one of the following:
+Install the bundles as a workspace by executing one of the following:
 
 ```bash
 # To run
