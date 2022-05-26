@@ -45,12 +45,6 @@ clusters
 └── wan2
 ```
 
-## OpenShift
-
-This article provides instructions for testing the plugin in a local environment. For testing in OpenShift, follow the instructions provided in the link below.
-
-[Session Plugin in OpenShift](README_K8S.md)
-
 ## Installation Steps
 
 First, switch into the installed workspace:
