@@ -19,6 +19,10 @@ buildNumber.properties
 # vscode
 workspace.code-workspace
 
+# Eclipse
+.settings
+.project
+
 # PadoGrid workspace
 /.addonenv.sh
 /initenv.sh
