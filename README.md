@@ -372,7 +372,7 @@ Now, make the session active by repeatedly updating the primary map within the 1
 
 ### Test Case 4. Ingestion by `SessionMetadata`
 
-The `test_session_ingestion` command puts `SessionMetadata` values for the option, `-entry INGEST`, regardless of the key type, i.e., `-type`. You can specify any key type and will get the same results. This is because the key type does not apply since the primary map values now provide the relevant data information.
+The `test_session_ingestion` command puts `SessionMetadata` values for the option, `-entry INGEST`, regardless of the key type, i.e., `-type`. You can specify any key type and will get the same results. This is because the key type does not apply anymore since the primary map values now provide the relevant data information.
 
 Let's ingest `STRING` keys.
 
