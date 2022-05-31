@@ -395,8 +395,6 @@ There are two (2) dashboards included in the bundle: *wan1* and *wan2*. You can 
 
 The screenshot shows the queue size steadily increasing. This is expected as you conduct load tests with a small value of `idle-time-seconds`. In our test cases, it is set for 10 seconds so that we can quicly observe expirations without waiting for a long period of time. This also means while ingesting data, the map entries are being expired at the same rate, leading to the steady queue size increase. This is particularly noticeable for the `STRING` key type due to the expensive `LIKE` search done per each primary map entry expiration event as described in [Test Case 2](#test-case-2-ingestion-by-key-type). **For other key types, the queue properly drains without any significant increase in size. You can try it for yourself.**
 
-The current session expiration plugin spawns a single thread to handle the blocking queue. It drains the queue a batch at a time as fast as it can. It iterates each batch of events and performs either the `delete` or `get` operation depending on the type of `SessionExpirationService` is set in the configuration file. This step generates additional events within Hazelcast and may consume a significant amount of system resources, in particular, CPUs. Unfortunately, Hazelcast does not provide the API that simply reset the idle timeout and this is all we can do for now.
-
 ## Teardown
 
 ```bash
@@ -411,6 +409,8 @@ stop_workspace -all
 ## Summary
 
 This bundle demonstrates the session expiration plugin in an WAN environment. The session expiration plugin allows session data to expire from all the session relevant maps by "touching" the primary map. This bundle also incorporates the `IpDiscoveryStrategy` plugin which drastically improves the WAN replication performance for the environment that has unreachable target endpoints. It includes several test cases along with cluster monitoring instructions for performing detailed analysis of plugins.
+
+The current session expiration plugin spawns a single thread to handle the blocking queue. It drains the queue a batch at a time as fast as it can. It iterates each batch of events and performs either the `delete` or `get` operation depending on the type of `SessionExpirationService` is set in the configuration file. This step generates additional events within Hazelcast and may consume a significant amount of system resources, in particular, CPUs. Unfortunately, Hazelcast does not provide the API that simply reset the idle timeout and this is all we can do for now.
 
 ## References
 
