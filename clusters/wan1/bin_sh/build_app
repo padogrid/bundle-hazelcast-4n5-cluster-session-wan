@@ -15,7 +15,13 @@ SYNOPSIS
 
 DESCRIPTION
    Builds the WAN test harness environment by generating SSL keystores and deploying them to
-   the pertinent components.
+   the pertinent components. It also builds IpDiscoveryStrategy and session expiration plugins
+   if not found in the 'plugins/" directory.
+
+REFERENCES
+    1. Hazelcast SPI, IpDiscoveryStrategy plugin by Sorint.lab, Private Repo, https://github.com/sorint-lab-us/hazelcast-spi.
+    2. IpDiscoveryStrategy Plugin Test Harness, IpDiscoveryStrategy plugin by Sorint.lab, Private Repo, https://github.com/sorint-lab-us/bundle-hazelcast-4n5-wan_discovery.
+    3. Session Expiration Management Plugin, https://github.com/padogrid/bundle-hazelcast-4n5-cluster-session.
 
 DEFAULT
    ./$EXECUTABLE
@@ -88,31 +94,41 @@ else
    cp target/$JAR_FILE $PADOGRID_WORKSPACE/plugins/
    popd > /dev/null 2>&1
 fi
-# Download and build the session expiration plugin
-echo "Downloading and building session-expiration-service..."
-echo git clone https://github.com/padogrid/bundle-hazelcast-4n5-cluster-session.git
-git clone https://github.com/padogrid/bundle-hazelcast-4n5-cluster-session.git
-pushd bundle-hazelcast-4n5-cluster-session/clusters/session > /dev/null 2>&1
-git pull
-mvn clean package -DskipTests
-echo "Deploying bundle-hazelcast-4n5-cluster-session/clusters/session/lib/*.jar to $PADOGRID_WORKSPACE/plugins/..."
-cp lib/*.jar $PADOGRID_WORKSPACE/plugins/
-popd > /dev/null 2>&1
 popd > /dev/null 2>&1
 
-#
-# k8s
-#
-
-# Download the oc_helm_wan bundle
-if [ ! -d "$PADOGRID_WORKSPACE/k8s/oc_helm_wan" ]; then
-   install_bundle -quiet -download bundle-hazelcast-3n4n5-k8s-oc_helm_wan
+# Check if the session expiration  plugin is included in the plugins directory
+JAR_FOUND="false"
+JAR_FILE=session-expiration-service-*.jar
+PLUGINS="$CLUSTER_DIR/plugins/*.jar"
+if [ -d "$CLUSTER_DIR/plugins" ]; then
+   pushd $CLUSTER_DIR/plugins > /dev/null 2>&1
+   for i in *.jar; do
+      if [ -f "$i" ] && [[ "$i" == "session-expiration-service-"* ]]; then
+         JAR_FOUND="true"
+         JAR_FILE=$i
+      fi
+   done
+   popd > /dev/null 2>&1
 fi
 
-if [ ! -f "$K8S_DIR/oc_helm_wan/bin_sh/build_app_org" ]; then
-   mv "$K8S_DIR/oc_helm_wan/bin_sh/build_app" "$K8S_DIR/oc_helm_wan/bin_sh/build_app_org"
-   cp "$APP_DIR/k8s/build_app" "$K8S_DIR/oc_helm_wan/bin_sh/build_app"
+pushd $CLUSTER_DIR > /dev/null 2>&1
+if [ "$JAR_FOUND" == "true" ]; then
+   # Copy the included session expiration plugin to the workspace
+   echo "Copying plugins/session-expiration-service-*.jar to $PADOGRID_WORKSPACE/plugins/..."
+   cp plugins/session-expiration-service-*.jar $PADOGRID_WORKSPACE/plugins/
+else
+   # Download and build the session expiration plugin
+   echo "Downloading and building session-expiration-service..."
+   echo git clone https://github.com/padogrid/bundle-hazelcast-4n5-cluster-session.git
+   git clone https://github.com/padogrid/bundle-hazelcast-4n5-cluster-session.git
+   pushd bundle-hazelcast-4n5-cluster-session/clusters/session > /dev/null 2>&1
+   git pull
+   mvn clean package -DskipTests
+   echo "Deploying bundle-hazelcast-4n5-cluster-session/clusters/session/lib/*.jar to $PADOGRID_WORKSPACE/plugins/..."
+   cp lib/*.jar $PADOGRID_WORKSPACE/plugins/
+   popd > /dev/null 2>&1
 fi
+popd > /dev/null 2>&1
 
 echo "Build complete."
 echo ""

@@ -80,7 +80,6 @@ Please select one of the initialization options below.
 
 ```bash
 # 1. Build SSL/TLS keystores and the IpDiscoveryStrategy plugin
-#    Also, install bundle-hazelcast-4-k8s-oc_helm_wan.
 switch_cluster wan1/bin_sh
 ./build_app
 
