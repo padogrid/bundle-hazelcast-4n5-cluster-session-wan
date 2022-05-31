@@ -89,8 +89,6 @@ hazelcast:
     provider-mode: LOCAL_AND_CACHED_CLASSES
   lite-member:
     enabled: false
-  jet:
-    enabled: true
   network:
     port:
       auto-increment: true
