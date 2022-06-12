@@ -4,6 +4,8 @@ This bundle demonstrates the session expiration plugin in a WAN environment. It 
 
 ## Installing Bundle
 
+![PadoGrid](https://github.com/padogrid/padogrid/raw/develop/images/padogrid-3d-16x16.png) [*Driven by PadoGrid*](https://github.com/padogrid)
+
 Install the bundle as a workspace by executing one of the following:
 
 ```bash
