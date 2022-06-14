@@ -153,12 +153,18 @@ MC_LICENSE_KEY=<Management Center license key>
 
 ## Startup Sequence
 
+1\. Start wan1 with management center and check status
+
 ```bash
-# 1. Start wan1 with management center and check status
+# wan1
 start_cluster -cluster wan1 -all
 show_cluster -cluster wan1
+```
 
-# 2. Start wan2 and check status. We'll use the wan1's MC to monitor both clusters.
+2\. Start wan2 and check status. We'll use the wan1 Management Center to monitor both clusters.
+
+```bash
+# wan2
 start_cluster -cluster wan2
 show_cluster -cluster wan2
 ```
@@ -223,7 +229,7 @@ Open the **WanDiscovery** folder and click on the **wan1** dashboard.
 
 ## Test Cases
 
-The wan1 and wan2 clusters are configured with their respective `etc/hazelcast.yaml` files. If XML files are preferred, then you can change it to the `etc/hazelcast.xml` file by editing the `bin_sh/setenv.sh` file.
+The wan1 and wan2 clusters are configured with their respective `etc/hazelcast.yaml` files. If XML files are preferred, then you can change it to the `etc/hazelcast.xml` file by editing the `bin_sh/setenv.sh` file. 
 
 ```bash
 # wan1 setenv.sh
@@ -234,6 +240,29 @@ vi setenv.sh
 cd_cluster wan2/bin_sh
 vi setenv.sh
 ```
+
+All the test cases are preconfigured with the session expiration thread pool size of two (2). Except for the STRING key type, increasing the thread pool size may not necessarily provide better performance. You can change the pool size in the Hazelcast configuration files as follows.
+
+```bash
+# wan1 setenv.sh
+cd_cluster wan1/etc
+vi hazelcast.yaml
+
+# wan2 setenv.sh
+cd_cluster wan2/etc
+vi hazelcast.yaml
+```
+
+hazelcast.yaml:
+
+```yaml
+...
+    # Expiration worker thread pool size. Default: 1
+    hazelcast.addon.cluster.expiration.thread.pool-size: 2
+...
+```
+
+:exclamation: *If you make any changes to the configuration files, then you must restart the cluster for the changes to take effect.*
 
 Open Management Center in two separate browsers. The first one to monitor **wan1** and the second one to monitor **wan2**. We will be monitoring both clusters as we carry out test cases.
 
@@ -423,7 +452,7 @@ stop_workspace -all
 
 This bundle demonstrates the session expiration plugin in an WAN environment. The session expiration plugin allows session data to expire from all the session relevant maps by "touching" the primary map. This bundle also incorporates the `IpDiscoveryStrategy` plugin which drastically improves the WAN replication performance for the environment that has unreachable target endpoints. It includes several test cases along with cluster monitoring instructions for performing detailed analysis of plugins.
 
-The current session expiration plugin spawns a single thread to handle the blocking queue. It drains the queue a batch at a time as fast as it can. It iterates each batch of events and performs either the `delete` or `get` operation depending on the type of `SessionExpirationService` is set in the configuration file. This step generates additional events within Hazelcast and may consume a significant amount of system resources, in particular, CPUs. Unfortunately, Hazelcast does not provide the API that simply reset the idle timeout and this is all we can do for now.
+The session expiration plugin adds incoming primary map events to a blocking queue polled by a separate managed thread, which drains the queue a batch at a time as fast as it can. It iterates each batch of events and performs either the `delete` or `get` operation depending on the type of `SessionExpirationService` is set in the configuration file. This step generates additional events within Hazelcast and may consume a significant amount of system resources, in particular, CPUs. Unfortunately, Hazelcast does not provide the API that simply resets the idle timeout and this is all we can do for now.
 
 ## References
 
