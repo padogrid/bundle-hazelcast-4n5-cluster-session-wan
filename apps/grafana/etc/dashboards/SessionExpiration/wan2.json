@@ -95,7 +95,7 @@
               "type": "prometheus",
               "uid": "-ifwfqX7k"
             },
-            "expr": "com_hazelcast_SessionExpirationService_QueueSize{exported_instance=\"_hzInstance_1_wan2\"}",
+            "expr": "org_hazelcast_addon_SessionExpirationService_QueueSize{exported_instance=\"_hzInstance_1_wan2\", tag=\"SessionExpirationService\"}",
             "refId": "A"
           }
         ],
@@ -390,7 +390,7 @@
               "type": "prometheus",
               "uid": "-ifwfqX7k"
             },
-            "expr": "org_hazelcast_addon_IpDiscoveryStatus_TargetEndpointCount{instance=\"localhost:8191\", tag=\"WanDiscovery\"}",
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_TargetEndpointCount{instance=\"localhost:8091\", tag=\"WanDiscovery\"}",
             "interval": "",
             "legendFormat": "All",
             "refId": "C"
@@ -494,7 +494,7 @@
               "type": "prometheus",
               "uid": "-ifwfqX7k"
             },
-            "expr": "org_hazelcast_addon_IpDiscoveryStatus_TargetEndpointCount{instance=\"localhost:8191\", tag=\"WanDiscovery\"}",
+            "expr": "org_hazelcast_addon_IpDiscoveryStatus_TargetEndpointCount{instance=\"localhost:8091\", tag=\"WanDiscovery\"}",
             "interval": "",
             "legendFormat": "All",
             "refId": "C"
@@ -536,12 +536,17 @@
     "refresh": "5s",
     "schemaVersion": 36,
     "style": "dark",
-    "tags": [],
+    "tags": [
+      "expiration",
+      "queue",
+      "session",
+      "wan"
+    ],
     "templating": {
       "list": []
     },
     "time": {
-      "from": "now-6h",
+      "from": "now-5m",
       "to": "now"
     },
     "timepicker": {},

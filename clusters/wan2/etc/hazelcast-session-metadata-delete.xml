@@ -50,8 +50,10 @@ IMPORTANT:
 
 		<!-- =============== SessionExpirationService - Begin =========== -->
 		<property name="hazelcast.addon.cluster.expiration.tag">SessionExpirationService</property>
-		<property name="hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name">true</property>
+		<property name="hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name">false</property>
 		<property name="hazelcast.addon.cluster.expiration.key.delimiter">@</property>
+		<!--  Expiration worker thread pool size. Default: 1 -->
+		<property name="hazelcast.addon.cluster.expiration.thread.pool-size">2</property>
 		<!-- Expiration queue drain size. For string keys, a large value can
 			potentially throw stack overflow exceptions due to what appears
 			to be Hazelcast LIKE predicate on OR operator limitations. Default: 100 -->
@@ -84,7 +86,7 @@ IMPORTANT:
 		<property name="hazelcast.addon.cluster.expiration.session.smks_%TAG%.key.type">STRING</property>
 		<!-- Enable postfix if data affinity is required. Note that there is a huge 
 			increase in latency if enabled due to LIKE '%sessionId' query that does not 
-			take advantage of key index. -->
+			take advantage of key index. Default: false -->
 		<!-- <property name="hazelcast.addon.cluster.expiration.string-key.postfix.enabled">false</property> -->
 		<!-- =============== SessionExpirationService - End ============= -->
 	</properties>
@@ -204,7 +206,7 @@ IMPORTANT:
 		</wan-replication-ref>
 		<per-entry-stats-enabled>true</per-entry-stats-enabled>
 		<entry-listeners>
-			<entry-listener include-value="false">
+			<entry-listener include-value="true">
 				org.hazelcast.addon.cluster.expiration.metadata.SessionExpirationListener_SessionMetadata_Delete
 			</entry-listener>
 		</entry-listeners>
@@ -229,7 +231,7 @@ IMPORTANT:
 		<merkle-tree enabled="true">
 			<depth>10</depth>
 		</merkle-tree>
-		<wan-replication-ref name="wan2-to-wan1">
+		<wan-replication-ref name="wan1-to-wan2">
 			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
 		</wan-replication-ref>
 		<per-entry-stats-enabled>true</per-entry-stats-enabled>
@@ -264,7 +266,7 @@ IMPORTANT:
 		</wan-replication-ref>
 		<per-entry-stats-enabled>true</per-entry-stats-enabled>
 		<entry-listeners>
-			<entry-listener include-value="false">
+			<entry-listener include-value="true">
 				org.hazelcast.addon.cluster.expiration.metadata.SessionExpirationListener_SessionMetadata_Delete
 			</entry-listener>
 		</entry-listeners>
@@ -294,7 +296,7 @@ IMPORTANT:
 		</wan-replication-ref>
 		<per-entry-stats-enabled>true</per-entry-stats-enabled>
 		<entry-listeners>
-			<entry-listener include-value="false">
+			<entry-listener include-value="true">
 				org.hazelcast.addon.cluster.expiration.metadata.SessionExpirationListener_SessionMetadata_Delete
 			</entry-listener>
 		</entry-listeners>
@@ -326,7 +328,7 @@ IMPORTANT:
 		</wan-replication-ref>
 		<per-entry-stats-enabled>true</per-entry-stats-enabled>
 		<entry-listeners>
-			<entry-listener include-value="false">
+			<entry-listener include-value="true">
 				org.hazelcast.addon.cluster.expiration.metadata.SessionExpirationListener_SessionMetadata_Delete
 			</entry-listener>
 		</entry-listeners>
@@ -381,5 +383,8 @@ IMPORTANT:
 			org.hazelcast.addon.hql.impl.PortableFactoryImpl
 			</portable-factory>
 		</portable-factories>
+		<data-serializable-factories>
+			<data-serializable-factory factory-id="1010">org.hazelcast.addon.cluster.expiration.metadata.ExpirationDataSerializableFactory</data-serializable-factory>
+		</data-serializable-factories>
 	</serialization>
 </hazelcast>

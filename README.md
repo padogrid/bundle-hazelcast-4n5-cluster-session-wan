@@ -323,11 +323,11 @@ Let's experiment `SessionMetadata`. Before we begin, we must first reconfigure t
 
 ```bash
 # Edit wan1 setenv.sh
-cd_app wan1/bin_sh
+cd_cluster wan1/bin_sh
 vi setenv.sh
 
 # Edit wan2 setenv.sh
-cd_app wan2/bin_sh
+cd_cluster wan2/bin_sh
 vi setenv.sh
 ```
 

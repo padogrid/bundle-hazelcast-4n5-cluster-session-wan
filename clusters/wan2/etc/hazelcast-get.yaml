@@ -36,8 +36,10 @@ hazelcast:
 
     # ----------- SessionExpirationService - Begin -------------------
     hazelcast.addon.cluster.expiration.tag: SessionExpirationService
-    hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name: true
+    hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name: false
     hazelcast.addon.cluster.expiration.key.delimiter: "@"
+    # Expiration worker thread pool size. Default: 1
+    hazelcast.addon.cluster.expiration.thread.pool-size: 2
     # Expiration queue drain size. For string keys, a large value can
     # potentially throw stack overflow exceptions due to what appears
     # to be Hazelcast LIKE predicate on OR operator limitations. Default: 100
@@ -68,7 +70,7 @@ hazelcast:
     hazelcast.addon.cluster.expiration.session.smks_%TAG%.key.type: STRING
     # Enable postfix if data afinity is required. Note that there is a huge
     # increase in latency if enabled due to LIKE '%sessionId' query that
-    # does not take advantage of key index.
+    # does not take advantage of key index. Default: false
     #hazelcast.addon.cluster.expiration.string-key.postfix.enabled: false
     # ----------- SessionExpirationService - End -------------------
 
@@ -90,8 +92,6 @@ hazelcast:
     provider-mode: LOCAL_AND_CACHED_CLASSES
   lite-member:
     enabled: false
-  jet:
-    enabled: true
   network:
     port:
       auto-increment: true
@@ -177,7 +177,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -194,7 +194,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 11
+      max-idle-seconds: 20
       merkle-tree:
         enabled: true
         depth: 10
@@ -214,7 +214,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -231,7 +231,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 11
+      max-idle-seconds: 20
       merkle-tree:
         enabled: true
         depth: 10
@@ -251,7 +251,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -268,7 +268,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 11
+      max-idle-seconds: 20
       merkle-tree:
         enabled: true
         depth: 10
@@ -288,7 +288,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -306,7 +306,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 11
+      max-idle-seconds: 20
       merkle-tree:
         enabled: true
         depth: 10
@@ -327,7 +327,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -345,7 +345,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 11
+      max-idle-seconds: 20
       merkle-tree:
         enabled: true
         depth: 10
@@ -362,7 +362,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -377,7 +377,11 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      # Relevant max-idle-seconds for non-plugin should be greater than the primary map's
+      # to compensate for the delay between Hazelcast operations. For our demo, this
+      # delay is neglible since we let the entries expire naturally. To be consistent
+      # with other maps, however, we keep the same large value.
+      max-idle-seconds: 20
       merkle-tree:
         enabled: true
         depth: 10

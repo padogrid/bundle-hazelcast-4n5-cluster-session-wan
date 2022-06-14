@@ -1,4 +1,3 @@
-
 # IMPORTANT:
 #
 #   padogrid depends on several system properties, which must be specified
@@ -36,8 +35,10 @@ hazelcast:
 
     # ----------- SessionExpirationService - Begin -------------------
     hazelcast.addon.cluster.expiration.tag: SessionExpirationService
-    hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name: true
+    hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name: false
     hazelcast.addon.cluster.expiration.key.delimiter: "@"
+    # Expiration worker thread pool size. Default: 1
+    hazelcast.addon.cluster.expiration.thread.pool-size: 2
     # Expiration queue drain size. For string keys, a large value can
     # potentially throw stack overflow exceptions due to what appears
     # to be Hazelcast LIKE predicate on OR operator limitations. Default: 100
@@ -66,10 +67,10 @@ hazelcast:
     # delimiter to extract the last token in the string value as the session ID.
     hazelcast.addon.cluster.expiration.session.smks_%TAG%: mks1_%TAG%,mks2_%TAG%
     hazelcast.addon.cluster.expiration.session.smks_%TAG%.key.type: STRING
-    # Enable postfix if data afinity is required. Note that there is a huge
+    # Enable postfix if data affinity is required. Note that there is a huge
     # increase in latency if enabled due to LIKE '%sessionId' query that
-    # does not take advantage of key index.
-    #hazelcast.addon.cluster.expiration.string-key.postfix.enabled: true
+    # does not take advantage of key index. Default: false
+    #hazelcast.addon.cluster.expiration.string-key.postfix.enabled: false
     # ----------- SessionExpirationService - End -------------------
 
   listeners:
@@ -175,7 +176,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -211,7 +212,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -247,7 +248,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -283,7 +284,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -321,7 +322,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -355,7 +356,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -370,7 +371,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 5
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10

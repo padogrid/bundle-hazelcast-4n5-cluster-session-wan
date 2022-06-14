@@ -74,16 +74,16 @@ JAVA_OPTS="$JAVA_OPTS -Dhazelcast.member.naming.moby.enabled=false"
 JAVA_OPTS="$JAVA_OPTS -Dhazelcast.health.monitoring.level=OFF"
 
 # Member number >$FULL_MEMBER_COUNT are lite-members
-FULL_MEMBER_COUNT=2
+FULL_MEMBER_COUNT=3
 
 if [ $MEMBER_NUM_NO_LEADING_ZERO -gt $FULL_MEMBER_COUNT ]; then
    CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-lite.yaml
 else
    # YAML
-   CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast.yaml
+   #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast.yaml
    #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-get.yaml
    #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-session-metadata-delete.yaml
-   #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-session-metadata-get.yaml
+   CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast-session-metadata-get.yaml
 
    # XML
    #CONFIG_FILE=$CLUSTER_DIR/etc/hazelcast.xml

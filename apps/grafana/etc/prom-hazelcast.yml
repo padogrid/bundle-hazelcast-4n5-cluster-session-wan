@@ -7,4 +7,4 @@ scrape_configs:
   - job_name: 'hazelcast'
     scrape_interval: 2s
     static_configs:
-      - targets: [localhost:2222, localhost:8091, localhost:8092, localhost:8093, localhost:8094, localhost:8095, localhost:8096, localhost:8097, localhost:8098, localhost:8099, localhost:8300]
+      - targets: [localhost:2222, localhost:8091, localhost:8092, localhost:8093, localhost:8094, localhost:8095, localhost:8096, localhost:8097, localhost:8098, localhost:8099, localhost:8191, localhost:8192, localhost:8193, localhost:8194, localhost:8195, localhost:8196, localhost:8197, localhost:8198, localhost:8199, localhost:8300]

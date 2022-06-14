@@ -50,8 +50,10 @@ IMPORTANT:
 
 		<!-- =============== SessionExpirationService - Begin =========== -->
 		<property name="hazelcast.addon.cluster.expiration.tag">SessionExpirationService</property>
-		<property name="hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name">true</property>
+		<property name="hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name">false</property>
 		<property name="hazelcast.addon.cluster.expiration.key.delimiter">@</property>
+		<!--  Expiration worker thread pool size. Default: 1 -->
+		<property name="hazelcast.addon.cluster.expiration.thread.pool-size">2</property>
 		<!-- Expiration queue drain size. For string keys, a large value can
 			potentially throw stack overflow exceptions due to what appears
 			to be Hazelcast LIKE predicate on OR operator limitations. Default: 100 -->
@@ -84,7 +86,7 @@ IMPORTANT:
 		<property name="hazelcast.addon.cluster.expiration.session.smks_%TAG%.key.type">STRING</property>
 		<!-- Enable postfix if data affinity is required. Note that there is a huge 
 			increase in latency if enabled due to LIKE '%sessionId' query that does not 
-			take advantage of key index. -->
+			take advantage of key index. Default: false -->
 		<!-- <property name="hazelcast.addon.cluster.expiration.string-key.postfix.enabled">false</property> -->
 		<!-- =============== SessionExpirationService - End ============= -->
 	</properties>
@@ -97,7 +99,6 @@ IMPORTANT:
 		</listener>
 		<listener>
 			org.hazelcast.addon.cluster.expiration.metadata.SessionExpirationServiceInitializer_SessionMetadata_Get
-			
 		</listener>
 	</listeners>
 
@@ -213,9 +214,11 @@ IMPORTANT:
 	<map name="mki*">
 		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
 		<time-to-live-seconds>3600</time-to-live-seconds>
-		<max-idle-seconds>10</max-idle-seconds>
+		<!-- Relevant max-idle-seconds must be greater than the primary map's to compensate
+			for the cluster and WAN replication delays -->
+		<max-idle-seconds>20</max-idle-seconds>
 		<merkle-tree enabled="true">
-			<depth>20</depth>
+			<depth>10</depth>
 		</merkle-tree>
 		<wan-replication-ref name="wan1-to-wan2">
 			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
@@ -244,9 +247,11 @@ IMPORTANT:
 	<map name="mko*">
 		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
 		<time-to-live-seconds>3600</time-to-live-seconds>
-		<max-idle-seconds>10</max-idle-seconds>
+		<!-- Relevant max-idle-seconds must be greater than the primary map's to compensate
+			for the cluster and WAN replication delays -->
+		<max-idle-seconds>20</max-idle-seconds>
 		<merkle-tree enabled="true">
-			<depth>20</depth>
+			<depth>10</depth>
 		</merkle-tree>
 		<wan-replication-ref name="wan1-to-wan2">
 			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
@@ -275,9 +280,11 @@ IMPORTANT:
 	<map name="mkc*">
 		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
 		<time-to-live-seconds>3600</time-to-live-seconds>
-		<max-idle-seconds>10</max-idle-seconds>
+		<!-- Relevant max-idle-seconds must be greater than the primary map's to compensate
+			for the cluster and WAN replication delays -->
+		<max-idle-seconds>20</max-idle-seconds>
 		<merkle-tree enabled="true">
-			<depth>20</depth>
+			<depth>10</depth>
 		</merkle-tree>
 		<wan-replication-ref name="wan1-to-wan2">
 			<merge-policy-class-name>LatestUpdateMergePolicy</merge-policy-class-name>
@@ -307,7 +314,9 @@ IMPORTANT:
 	<map name="mkc*">
 		<eviction eviction-policy="LRU" max-size-policy="FREE_HEAP_PERCENTAGE" size="20" />
 		<time-to-live-seconds>3600</time-to-live-seconds>
-		<max-idle-seconds>10</max-idle-seconds>
+		<!-- Relevant max-idle-seconds must be greater than the primary map's to compensate
+			for the cluster and WAN replication delays -->
+		<max-idle-seconds>20</max-idle-seconds>
 		<merkle-tree enabled="true">
 			<depth>10</depth>
 		</merkle-tree>

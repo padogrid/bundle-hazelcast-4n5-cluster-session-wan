@@ -1,4 +1,3 @@
-
 # IMPORTANT:
 #
 #   padogrid depends on several system properties, which must be specified
@@ -36,8 +35,14 @@ hazelcast:
 
     # ----------- SessionExpirationService - Begin -------------------
     hazelcast.addon.cluster.expiration.tag: SessionExpirationService
-    hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name: true
+    hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name: false
     hazelcast.addon.cluster.expiration.key.delimiter: "@"
+    # Expiration worker thread pool size. Default: 1
+    hazelcast.addon.cluster.expiration.thread.pool-size: 2
+    # Expiration queue drain size. For string keys, a large value can
+    # potentially throw stack overflow exceptions due to what appears
+    # to be Hazelcast LIKE predicate on OR operator limitations. Default: 100
+    hazelcast.addon.cluster.expiration.queue.drain-size: 200
 
     # INTERFACE expects key classes to implement the ISessionId interface.
     hazelcast.addon.cluster.expiration.session.smki_%TAG%: mki1_%TAG%,mki2_%TAG%
@@ -82,8 +87,6 @@ hazelcast:
     provider-mode: LOCAL_AND_CACHED_CLASSES
   lite-member:
     enabled: false
-  jet:
-    enabled: true
   network:
     port:
       auto-increment: true
@@ -160,7 +163,7 @@ hazelcast:
                   # connection-timout-in-msec applies only if service-enabled=false
                   connection-timeout-in-msec: 200
                   # read-timeout-in-msec only if service-enabled=false
-                  read-timeout-in-msec: 200              
+                  read-timeout-in-msec: 200
   map:
     # INTERFACE
     smki_*:
@@ -265,10 +268,6 @@ hazelcast:
         wan2-to-wan1:
           merge-policy-class-name: LatestUpdateMergePolicy
       per-entry-stats-enabled: true
-      indexes:
-        - type: HASH
-          attributes:
-            - "__key.sessionId"
 
     # PARTITION_AWARE
     smkp_*:
@@ -302,10 +301,6 @@ hazelcast:
         wan2-to-wan1:
           merge-policy-class-name: LatestUpdateMergePolicy
       per-entry-stats-enabled: true
-      indexes:
-        - type: HASH
-          attributes:
-            - "__key.partitionKey"
       partition-strategy: com.hazelcast.partition.strategy.StringAndPartitionAwarePartitioningStrategy
 
     # STRING
@@ -357,7 +352,6 @@ hazelcast:
         wan2-to-wan1:
           merge-policy-class-name: LatestUpdateMergePolicy
       per-entry-stats-enabled: true
-      partition-strategy: com.hazelcast.partition.strategy.StringPartitioningStrategy
     mkn*:
       eviction:
         eviction-policy: LRU
@@ -372,8 +366,7 @@ hazelcast:
         wan2-to-wan1:
           merge-policy-class-name: LatestUpdateMergePolicy
       per-entry-stats-enabled: true
-      partition-strategy: com.hazelcast.partition.strategy.StringPartitioningStrategy
-    
+          
   executor-service:
     hz:wan:
       pool-size: 16

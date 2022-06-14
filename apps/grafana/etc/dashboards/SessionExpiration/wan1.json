@@ -69,32 +69,7 @@
               ]
             }
           },
-          "overrides": [
-            {
-              "__systemRef": "hideSeriesFrom",
-              "matcher": {
-                "id": "byNames",
-                "options": {
-                  "mode": "exclude",
-                  "names": [
-                    "com_hazelcast_SessionExpirationService_QueueSize{exported_instance=\"_hzInstance_1_wan1\", instance=\"localhost:8092\", job=\"hazelcast\", tag=\"SessionExpirationService\", type=\"Metrics\"}"
-                  ],
-                  "prefix": "All except:",
-                  "readOnly": true
-                }
-              },
-              "properties": [
-                {
-                  "id": "custom.hideFrom",
-                  "value": {
-                    "legend": false,
-                    "tooltip": false,
-                    "viz": true
-                  }
-                }
-              ]
-            }
-          ]
+          "overrides": []
         },
         "gridPos": {
           "h": 8,
@@ -120,7 +95,7 @@
               "type": "prometheus",
               "uid": "-ifwfqX7k"
             },
-            "expr": "com_hazelcast_SessionExpirationService_QueueSize",
+            "expr": "org_hazelcast_addon_SessionExpirationService_QueueSize{exported_instance=\"_hzInstance_1_wan1\", tag=\"SessionExpirationService\"}",
             "refId": "A"
           }
         ],

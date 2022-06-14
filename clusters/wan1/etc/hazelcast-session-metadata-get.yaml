@@ -35,8 +35,14 @@ hazelcast:
 
     # ----------- SessionExpirationService - Begin -------------------
     hazelcast.addon.cluster.expiration.tag: SessionExpirationService
-    hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name: true
+    hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name: false
     hazelcast.addon.cluster.expiration.key.delimiter: "@"
+    # Expiration worker thread pool size. Default: 1
+    hazelcast.addon.cluster.expiration.thread.pool-size: 2
+    # Expiration queue drain size. For string keys, a large value can
+    # potentially throw stack overflow exceptions due to what appears
+    # to be Hazelcast LIKE predicate on OR operator limitations. Default: 100
+    hazelcast.addon.cluster.expiration.queue.drain-size: 200
 
     # INTERFACE expects key classes to implement the ISessionId interface.
     hazelcast.addon.cluster.expiration.session.smki_%TAG%: mki1_%TAG%,mki2_%TAG%
@@ -73,7 +79,6 @@ hazelcast:
     # initialize and start SessionExpirationService.
     - org.hazelcast.addon.cluster.expiration.metadata.SessionExpirationServiceInitializer_SessionMetadata_Get
 
-
   management-center:
     scripting-enabled: true
   user-code-deployment:
@@ -82,8 +87,6 @@ hazelcast:
     provider-mode: LOCAL_AND_CACHED_CLASSES
   lite-member:
     enabled: false
-  jet:
-    enabled: true
   network:
     port:
       auto-increment: true
@@ -160,41 +163,7 @@ hazelcast:
                   # connection-timout-in-msec applies only if service-enabled=false
                   connection-timeout-in-msec: 200
                   # read-timeout-in-msec only if service-enabled=false
-                  read-timeout-in-msec: 200
-    wan1-to-wan2-mkq:
-      batch-publisher:
-        location2-mkq:
-          cluster-name: wan2
-          batch-size: 1000
-          queue-capacity: 100000
-          batch-max-delay-millis: 1000
-          max-concurrent-invocations: 12
-          queue-full-behavior: DISCARD_AFTER_MUTATION
-          acknowledge-type: ACK_ON_RECEIPT
-          response-timeout-millis: 60000
-          sync:
-            consistency-check-strategy: MERKLE_TREES
-          discovery-strategies:
-            discovery-strategies:
-              - class: org.hazelcast.addon.spi.discovery.IpDiscoveryStrategy
-                enabled: true
-                properties:
-                  # tag is used as log prefix and is a part of JMX metric name
-                  tag: WanDiscovery-mkq
-                  target-endpoints: 192.168.1.11-50,localhost:5816,localhost:5817,localhost:5818,localhost:5819,localhost:5820
-                  probe-type: socket
-                  # If service-enabled=true, then the probing is done in the dedicated thread.
-                  # else if service-enabled=false then the probing is done in the Hazelcast
-                  # discovery thread.  Default is false
-                  service-enabled: true
-                  # service-delay-in-msec applies only if service-enabled=true.
-                  # If multiple strategies are listed then the first one configured
-                  # overrides others.
-                  service-delay-in-msec: 30000
-                  # connection-timout-in-msec applies only if service-enabled=false
-                  connection-timeout-in-msec: 200
-                  # read-timeout-in-msec only if service-enabled=false
-                  read-timeout-in-msec: 200
+                  read-timeout-in-msec: 200              
   map:
     # INTERFACE
     smki_*:
@@ -220,6 +189,8 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
+      # Relevant max-idle-seconds must be greater than the primary map's to compensate
+      # for the cluster and WAN replication delays.
       max-idle-seconds: 20
       merkle-tree:
         enabled: true
@@ -253,6 +224,8 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
+      # Relevant max-idle-seconds must be greater than the primary map's to compensate
+      # for the cluster and WAN replication delays.
       max-idle-seconds: 20
       merkle-tree:
         enabled: true
@@ -286,6 +259,8 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
+      # Relevant max-idle-seconds must be greater than the primary map's to compensate
+      # for the cluster and WAN replication delays.
       max-idle-seconds: 20
       merkle-tree:
         enabled: true
@@ -320,6 +295,8 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
+      # Relevant max-idle-seconds must be greater than the primary map's to compensate
+      # for the cluster and WAN replication delays.
       max-idle-seconds: 20
       merkle-tree:
         enabled: true
@@ -342,21 +319,23 @@ hazelcast:
         enabled: true
         depth: 10
       wan-replication-ref:
-        wan1-to-wan2:
+        wan2-to-wan1:
           merge-policy-class-name: LatestUpdateMergePolicy
       per-entry-stats-enabled: true
       entry-listeners:
         - class-name: org.hazelcast.addon.cluster.expiration.metadata.SessionExpirationListener_SessionMetadata_Get
           include-value: true
       #partition-strategy: com.hazelcast.partition.strategy.StringPartitioningStrategy
-        
+
     mks*:
       eviction:
         eviction-policy: LRU
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 10
+      # Relevant max-idle-seconds must be greater than the primary map's to compensate
+      # for the cluster and WAN replication delays.
+      max-idle-seconds: 20
       merkle-tree:
         enabled: true
         depth: 10
@@ -373,7 +352,7 @@ hazelcast:
         max-size-policy: FREE_HEAP_PERCENTAGE
         size: 20
       time-to-live-seconds: 3600
-      max-idle-seconds: 20
+      max-idle-seconds: 10
       merkle-tree:
         enabled: true
         depth: 10
@@ -400,7 +379,6 @@ hazelcast:
         wan1-to-wan2:
           merge-policy-class-name: LatestUpdateMergePolicy
       per-entry-stats-enabled: true
-      #partition-strategy: com.hazelcast.partition.strategy.StringAndPartitionAwarePartitioningStrategy
           
   executor-service:
     hz:wan:

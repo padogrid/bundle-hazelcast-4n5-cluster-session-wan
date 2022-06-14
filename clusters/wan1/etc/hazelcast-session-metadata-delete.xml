@@ -50,8 +50,10 @@ IMPORTANT:
 
 		<!-- =============== SessionExpirationService - Begin =========== -->
 		<property name="hazelcast.addon.cluster.expiration.tag">SessionExpirationService</property>
-		<property name="hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name">true</property>
+		<property name="hazelcast.addon.cluster.expiration.jmx-use-hazelcast-object-name">false</property>
 		<property name="hazelcast.addon.cluster.expiration.key.delimiter">@</property>
+		<!--  Expiration worker thread pool size. Default: 1 -->
+		<property name="hazelcast.addon.cluster.expiration.thread.pool-size">2</property>
 		<!-- Expiration queue drain size. For string keys, a large value can
 			potentially throw stack overflow exceptions due to what appears
 			to be Hazelcast LIKE predicate on OR operator limitations. Default: 100 -->
@@ -84,13 +86,8 @@ IMPORTANT:
 		<property name="hazelcast.addon.cluster.expiration.session.smks_%TAG%.key.type">STRING</property>
 		<!-- Enable postfix if data affinity is required. Note that there is a huge 
 			increase in latency if enabled due to LIKE '%sessionId' query that does not 
-			take advantage of key index. -->
+			take advantage of key index. Default: false -->
 		<!-- <property name="hazelcast.addon.cluster.expiration.string-key.postfix.enabled">false</property> -->
-
-		<!-- OBJECT -->
-		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%">mkp_session_fi_session_data_%TAG%,mkp_session_application_data_%TAG%</property>
-		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.type">OBJECT</property>
-		<property name="hazelcast.addon.cluster.expiration.session.mkp_session_web_session_fi_session_id_mapping_%TAG%.key.property">sessionId</property>
 		<!-- =============== SessionExpirationService - End ============= -->
 	</properties>
 	<listeners>
