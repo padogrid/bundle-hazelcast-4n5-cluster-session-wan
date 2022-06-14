@@ -4,6 +4,8 @@ This bundle demonstrates the session expiration plugin in a WAN environment. It 
 
 ## Installing Bundle
 
+![PadoGrid](https://github.com/padogrid/padogrid/raw/develop/images/padogrid-3d-16x16.png) [*Driven by PadoGrid*](https://github.com/padogrid)
+
 Install the bundle as a workspace by executing one of the following:
 
 ```bash
@@ -12,6 +14,18 @@ install_bundle -download -workspace bundle-hazelcast-4n5-cluster-session-wan
 
 # To run and/or check in
 install_bundle -checkout bundle-hazelcast-4n5-cluster-session-wan
+```
+
+### Firewall
+
+If you are behind a firewall that prevents access to the Internet, then you can install this bundle as follows.
+
+-	Click on the **Code** pulldown and select **Download Zip**
+-	Place the downloaded zip file, `bundle-hazelcast-4n5-cluster-session-wan-master.zip`, in your PadoGrid environment, i.e., Kubernetes pod, and run the following command.
+
+```bash
+install_bundle -workspace session-wan bundle-hazelcast-4n5-cluster-session-wan-master.zip
+switch_workspace sesson-wan
 ```
 
 ## Use Case
@@ -392,7 +406,7 @@ There are two (2) dashboards included in the bundle: *wan1* and *wan2*. You can 
 
 ![Grafana WAN1](images/grafana-wan1.png)
 
-The screenshot shows the queue size steadily increasing. This is expected as you conduct load tests with a small value of `idle-time-seconds`. In our test cases, it is set for 10 seconds so that we can quicly observe expirations without waiting for a long period of time. This also means while ingesting data, the map entries are being expired at the same rate, leading to the steady queue size increase. This is particularly noticeable for the `STRING` key type due to the expensive `LIKE` search done per each primary map entry expiration event as described in [Test Case 2](#test-case-2-ingestion-by-key-type). **For other key types, the queue properly drains without any significant increase in size. You can try it for yourself.**
+The screenshot shows the queue size steadily increasing. This is expected as you conduct load tests with a small value of `idle-time-seconds`. In our test cases, it is set for 10 seconds so that we can quickly observe expirations without waiting for a long period of time. This also means while ingesting data, the map entries are being expired at the same rate, leading to the steady queue size increase. This is particularly noticeable for the `STRING` key type due to the expensive `LIKE` search done per each primary map entry expiration event as described in [Test Case 2](#test-case-2-ingestion-by-key-type). **For other key types, the queue properly drains without any significant increase in size. You can try it for yourself.**
 
 ## Teardown
 
