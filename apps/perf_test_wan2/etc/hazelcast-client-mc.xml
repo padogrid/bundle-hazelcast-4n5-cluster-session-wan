@@ -26,10 +26,10 @@
                         com.hazelcast.nio.ssl.BasicSSLContextFactory
                         </factory-class-name>
                         <properties>
-                                <property name="keyStore">/Users/dpark/Padogrid/workspaces/rwe-sorint/bundle-hazelcast-4n5-cluster-session-wan/apps/perf_test_wan2/etc/ssl/client.keystore</property>
+                                <property name="keyStore">/Users/dpark/Padogrid/workspaces/rwe-bundles/bundle-hazelcast-4n5-cluster-session-wan/apps/perf_test_wan2/etc/ssl/client.keystore</property>
                                 <property name="keyStorePassword">sorint</property>
                                 <property name="keyStoreType">pkcs12</property>
-                                <property name="trustStore">/Users/dpark/Padogrid/workspaces/rwe-sorint/bundle-hazelcast-4n5-cluster-session-wan/apps/perf_test_wan2/etc/ssl/client-trust.keystore</property>
+                                <property name="trustStore">/Users/dpark/Padogrid/workspaces/rwe-bundles/bundle-hazelcast-4n5-cluster-session-wan/apps/perf_test_wan2/etc/ssl/client-trust.keystore</property>
                                 <property name="trustStorePassword">sorint</property>
                                 <property name="trustStoreType">pkcs12</property>
                                 <property name="protocol">TLSv1.2</property>
@@ -43,6 +43,9 @@
 				org.hazelcast.demo.nw.data.PortableFactoryImpl
 			</portable-factory>
 		</portable-factories>
+		<data-serializable-factories>
+			<data-serializable-factory factory-id="1010">org.hazelcast.addon.cluster.expiration.metadata.ExpirationDataSerializableFactory</data-serializable-factory>
+		</data-serializable-factories>
 	</serialization>
 
 </hazelcast-client>

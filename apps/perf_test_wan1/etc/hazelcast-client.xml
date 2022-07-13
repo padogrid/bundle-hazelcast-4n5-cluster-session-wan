@@ -19,22 +19,22 @@
 			<address>localhost:5701</address>
 			<address>localhost:5702</address>
 		</cluster-members>
-		
-                <!-- SSL settings -->
-                <ssl enabled="true">
-                        <factory-class-name>
+
+		<!-- SSL settings -->
+		<ssl enabled="true">
+			<factory-class-name>
                         com.hazelcast.nio.ssl.BasicSSLContextFactory
                         </factory-class-name>
-                        <properties>
-                                <property name="keyStore">${keyStore}</property>
-                                <property name="keyStorePassword">${keyStorePassword}</property>
-                                <property name="keyStoreType">pkcs12</property>
-                                <property name="trustStore">${trustStore}</property>
-                                <property name="trustStorePassword">${trustStorePassword}</property>
-                                <property name="trustStoreType">${trustStoreType}</property>
-                                <property name="protocol">TLSv1.2</property>
-                        </properties>
-                </ssl>
+			<properties>
+				<property name="keyStore">${keyStore}</property>
+				<property name="keyStorePassword">${keyStorePassword}</property>
+				<property name="keyStoreType">pkcs12</property>
+				<property name="trustStore">${trustStore}</property>
+				<property name="trustStorePassword">${trustStorePassword}</property>
+				<property name="trustStoreType">${trustStoreType}</property>
+				<property name="protocol">TLSv1.2</property>
+			</properties>
+		</ssl>
 	</network>
 	<serialization>
 		<portable-version>1</portable-version>
@@ -44,7 +44,8 @@
 			</portable-factory>
 		</portable-factories>
 		<data-serializable-factories>
-			<data-serializable-factory factory-id="1010">
+			<data-serializable-factory
+				factory-id="1010">
                 org.hazelcast.addon.cluster.expiration.metadata.ExpirationDataSerializableFactory
             </data-serializable-factory>
 		</data-serializable-factories>

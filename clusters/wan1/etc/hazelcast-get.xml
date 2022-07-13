@@ -420,5 +420,8 @@ IMPORTANT:
 			org.hazelcast.addon.hql.impl.PortableFactoryImpl
 			</portable-factory>
 		</portable-factories>
+		<data-serializable-factories>
+			<data-serializable-factory factory-id="1010">org.hazelcast.addon.cluster.expiration.metadata.ExpirationDataSerializableFactory</data-serializable-factory>
+		</data-serializable-factories>
 	</serialization>
 </hazelcast>

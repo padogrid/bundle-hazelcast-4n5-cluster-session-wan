@@ -405,3 +405,6 @@ hazelcast:
     portable-factories:
       - factory-id: 10000
         class-name: org.hazelcast.addon.hql.impl.PortableFactoryImpl
+    data-serializable-factories:
+      - factory-id: 1010
+        class-name: org.hazelcast.addon.cluster.expiration.metadata.ExpirationDataSerializableFactory
