@@ -21,8 +21,6 @@ SCRIPT_DIR="$(cd -P -- "$(dirname -- "$0")" && pwd -P)"
 
 EXECUTABLE="`basename $0`"
 
-echo PADOGRID_UPDATE_VERSION_NUMBER=$PADOGRID_UPDATE_VERSION_NUMBER
-exit
 # Export LOG_FILE (See etc/log4j2.properties)
 if [[ ${OS_NAME} == CYGWIN* ]]; then
    export LOG_FILE=$LOG_DIR\\$EXECUTABLE.log
