@@ -25,6 +25,7 @@ If you are behind a firewall that prevents access to the Internet, then you can 
 -	Place the downloaded zip file, `bundle-hazelcast-4n5-cluster-session-wan-master.zip`, in your PadoGrid environment, i.e., Kubernetes pod, and run the following command.
 
 ```bash
+# If behind firewall, then manually download the bundle distribution and execute the following.
 install_bundle -workspace session-wan bundle-hazelcast-4n5-cluster-session-wan-master.zip
 switch_workspace sesson-wan
 ```
