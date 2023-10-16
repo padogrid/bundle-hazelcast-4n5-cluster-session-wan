@@ -18,6 +18,7 @@ buildNumber.properties
 
 # vscode
 workspace.code-workspace
+.vscode
 
 # Eclipse
 .settings
