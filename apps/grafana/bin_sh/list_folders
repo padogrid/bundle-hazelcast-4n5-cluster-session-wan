@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ========================================================================
-# Copyright (c) 2020 Netcrest Technologies, LLC. All rights reserved.
+# Copyright (c) 2020-2023 Netcrest Technologies, LLC. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,17 +31,30 @@ done
 popd > /dev/null 2>&1
 
 if [ "$HELP" == "true" ]; then
-   echo "Usage:"
-   echo "   ./$EXECUTABLE [-?]"
-   echo ""
-   echo "   Lists all of the folders that are available in the 'etc/dashboard' directory." 
-   echo "   The listed folders can be imported into Grafana using the 'import_folder' command."
-   echo "   This command is equivalent to the 'ls' command as follows:"
-   echo "      ls $APP_DIR/etc/dashboard"
-   echo ""
-   echo "Default: ./$EXECUTABLE"
-   echo ""
-   exit
+cat <<EOF
+
+WORKSPACE
+   $PADOGRID_WORKSPACE
+
+NAME
+   ./$EXECUTABLE - List Grafana folders in this app's directory
+
+SYNOPSIS
+   ./$EXECUTABLE [-?]
+
+DESCRIPTION
+   Lists all of the folders that are available in the 'etc/dashboard' directory.
+   The listed folders can be imported into Grafana using the 'import_folder' command.
+
+   This command is equivalent to the 'ls' command as follows:
+
+   ls $APP_DIR/etc/dashboard
+
+DEFAULT
+   ./$EXECUTABLE
+
+EOF
+exit
 fi
 
 echo "Folders on local file system. Run 'import_folder' to import them into Grafana." 

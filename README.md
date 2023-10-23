@@ -46,7 +46,7 @@ This bundle creates a WAN environment consisting of two (2) clusters, two (2) `p
 
 ## Optional Software
 
-The following is a list of optional software. They are not required for running the session and WAN replication plugins.
+The following is a list of optional software. They are not required for running the session and WAN replication plugins. Installation instructions for Prometheus and Grafana in PadoGrid are provided in the [Installation Steps](#installation-steps) section.
 
 - [Prometheus](https://prometheus.io/download/) 
 - [Grafana](https://grafana.com/grafana/download)
@@ -84,8 +84,17 @@ install_padogrid -product hazelcast-enterprise
 install_padogrid -product hazelcast-mc
 
 # Update hazelcast enterprise and managment center
-update_products -hazelcast-enterprise
-update_products -hazelcast-mc
+update_products -product hazelcast-enterprise
+update_products -product hazelcast-mc
+```
+
+Optional: Similarly, execute the following to install Prometheus and Grafana.
+
+```bash
+install_padogrid -product prometheus
+install_padogrid -product grafana
+update_products -product prometheus
+update_products -product grafana
 ```
 
 This bundle has been configured to run full members (data nodes) and lite-members (compute nodes). By default, the first two members are full members and any additional members added thereafter are configured as lite-members. This setting is configurable in the each cluster's `bin_sh/setenv.sh` file. 
@@ -198,24 +207,15 @@ From the management center, create the wan1 and wan2 views by uploading the abov
 
 ![wan2 management center](images/mc-cluster-config.png)
 
-4\. Start Prometheus
+4\. Optional: Start Prometheus and Grafana
 
 ```bash
-export PROMETHEUS_HOME=<prometheus home path>
-export PATH=$PROMETHEUS_HOME:$PATH
-cd_app grafana
-prometheus --web.enable-admin-api --config.file=etc/prom-hazelcast.yml
+cd_app grafana/bin_sh
+./start_prometheus
+./start_grafana
 ```
 
-5\. Start Grafana
-
-```bash
-export GRAFANA_HOME=<grafana home path>
-export PATH=$PATH:$GRAFANA_HOME/bin
-grafana-server -homepath $GRAFANA_HOME
-```
-
-6\. Import Grafana dashboards
+5\. Import Grafana dashboards
 
 ```bash
 cd_app grafana/bin_sh
@@ -451,7 +451,10 @@ The screenshot shows the queue size steadily increasing. This is expected as you
 # 2. Stop workspace
 stop_workspace -all
 
-# 3. Stop Prometheus and Grafana (Ctr-C)
+# 3. Stop Prometheus and Grafana
+cd_app grafana/bin_sh
+./stop_prometheus
+./stop_grafana
 ```
 
 ## Summary

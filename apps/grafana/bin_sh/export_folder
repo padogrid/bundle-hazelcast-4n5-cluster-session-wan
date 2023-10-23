@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ========================================================================
-# Copyright (c) 2020 Netcrest Technologies, LLC. All rights reserved.
+# Copyright (c) 2020-2023 Netcrest Technologies, LLC. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,22 +22,44 @@ SCRIPT_DIR="$(cd -P -- "$(dirname -- "$0")" && pwd -P)"
 EXECUTABLE="`basename $0`"
 
 if [ "$HELP" == "true" ]; then
-   echo "Usage:"
-   echo "   ./$EXECUTABLE [-folder <folder-name>] [-all] [-?]"
-   echo ""
-   echo "   Exports the specified folder's dashboards to the following directory: "
-   echo "      $EXPORT_DASHBOARD_DIR"
-   echo ""
-   echo "     <folder-name>      Folder name."
-   echo "     -all               Export all folders."
-   echo ""
-   echo "Default: ./$EXECUTABLE -folder $DEFAULT_FOLDER"
-   echo ""
-   exit
+cat <<EOF
+
+WORKSPACE
+   $PADOGRID_WORKSPACE
+
+NAME
+   ./$EXECUTABLE - Export the specified folder's dashboards
+
+SYNOPSIS
+   ./$EXECUTABLE [-folder folder_name] [-?]
+
+DESCRIPTION
+   Exports the specified folder's dashboards to the following directory:
+
+   $EXPORT_DASHBOARD_DIR
+
+OPTIONS
+   -folder folder_name
+             Folder name. Default: $DEFAULT_FOLDER
+
+   -all
+             Export all folders.
+
+DEFAULT
+   ./$EXECUTABLE -folder $DEFAULT_FOLDER
+
+EOF
+exit
 fi
 
 if [ "$FOLDER" != "" ]; then
-   FOLDERS=$FOLDER
+   __UID=`./get_folder_uid -folder $FOLDER`
+   if [ "$__UID" == "" ]; then
+      echo -e >&2 "${CError}ERROR:${CNone} Specified folder not found in Grafana [$FOLDER]. Command aborted."
+      exit 1
+   else
+      FOLDERS=$FOLDER
+   fi
 elif [ "$ALL" != "true" ]; then
    FOLDERS=$DEFAULT_FOLDER
 else
@@ -58,7 +80,7 @@ else
 fi
 
 if [ "$FOLDERS" == "" ]; then
-   echo "Folders not found in Grafana. Command aboarded."
+   echo -e >&2 "${CError}ERROR:${CNone} Folders not found in Grafana. Command aborted."
    exit 1
 fi
    
@@ -85,7 +107,9 @@ for FOLDER in $FOLDERS; do
       __UID=`trimDoubleQuotes "$__UID"`
       __TITLE=`jq '.['$i'].title' $TMP_FILE`
       __TITLE=`trimDoubleQuotes "$__TITLE"`
-      curl -sS $GRAFANA_URL/api/dashboards/uid/$__UID | jq . > "$EXPORT_FOLDER_DIR/${__TITLE}.json" 
+      if [ ! "$__TITLE" == "null" ]; then
+         curl -sS $GRAFANA_URL_REST/api/dashboards/uid/$__UID | jq . > "$EXPORT_FOLDER_DIR/${__TITLE}.json" 
+      fi
    done;
    echo "Exported: $EXPORT_FOLDER_DIR"
 done

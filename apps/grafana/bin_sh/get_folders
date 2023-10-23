@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ========================================================================
-# Copyright (c) 2020 Netcrest Technologies, LLC. All rights reserved.
+# Copyright (c) 2020-2023 Netcrest Technologies, LLC. All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,14 +22,25 @@ SCRIPT_DIR="$(cd -P -- "$(dirname -- "$0")" && pwd -P)"
 EXECUTABLE="`basename $0`"
 
 if [ "$HELP" == "true" ]; then
-   echo "Usage:"
-   echo "   ./$EXECUTABLE [-?]"
-   echo ""
-   echo "  Displays all folders found in Grafana."
-   echo ""
-   echo "Default: ./$EXECUTABLE"
-   echo ""
-   exit
+cat <<EOF
+
+WORKSPACE
+   $PADOGRID_WORKSPACE
+
+NAME
+   ./$EXECUTABLE - Displays all folders found in Grafana
+
+SYNOPSIS
+   ./$EXECUTABLE [-?]
+
+DESCRIPTION
+   Displays all folders found in Grafana.
+
+DEFAULT
+   ./$EXECUTABLE
+
+EOF
+exit
 fi
 
-curl -sS $GRAFANA_URL/api/folders | jq .
+curl -sS $GRAFANA_URL_REST/api/folders | jq .
