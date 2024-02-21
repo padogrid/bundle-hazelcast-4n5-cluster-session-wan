@@ -73,19 +73,19 @@ First, switch into the installed workspace:
 switch_workspace bundle-hazelcast-4n5-cluster-session-wan
 ```
 
-This bundle builds the test enviroment based on the Hazelcast and Management versions in your workspace. Make sure your workspace has been configured with the desired versions before building the demo environment. You can check the current workspace versions by running `show_products` and update versions by running `update_products` as shown below.
+This bundle builds the test enviroment based on the Hazelcast and Management versions in your workspace. Make sure your workspace has been configured with the desired versions before building the demo environment. You can check the current workspace versions by running `show_padogrid` and update versions by running `update_padogrid` as shown below.
 
 ```bash
 # List current workspace product versions
-show_products
+show_padogrid
 
 # If the desired versions are not listed then install
 install_padogrid -product hazelcast-enterprise
 install_padogrid -product hazelcast-mc
 
 # Update hazelcast enterprise and managment center
-update_products -product hazelcast-enterprise
-update_products -product hazelcast-mc
+update_padogrid -product hazelcast-enterprise
+update_padogrid -product hazelcast-mc
 ```
 
 Optional: Similarly, execute the following to install Prometheus and Grafana.
@@ -93,8 +93,8 @@ Optional: Similarly, execute the following to install Prometheus and Grafana.
 ```bash
 install_padogrid -product prometheus
 install_padogrid -product grafana
-update_products -product prometheus
-update_products -product grafana
+update_padogrid -product prometheus
+update_padogrid -product grafana
 ```
 
 This bundle has been configured to run full members (data nodes) and lite-members (compute nodes). By default, the first two members are full members and any additional members added thereafter are configured as lite-members. This setting is configurable in the each cluster's `bin_sh/setenv.sh` file. 
