@@ -3,7 +3,7 @@
 ---
 
 <!-- Platforms -->
-[![Host OS](https://github.com/padogrid/padogrid/wiki/images/padogrid-host-os.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Host-OS) [![VM](https://github.com/padogrid/padogrid/wiki/images/padogrid-vm.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-VM) [![Docker](https://github.com/padogrid/padogrid/wiki/images/padogrid-docker.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Docker) [![Kubernetes](https://github.com/padogrid/padogrid/wiki/images/padogrid-kubernetes.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Kubernetes)
+[![PadoGrid 1.x](https://github.com/padogrid/padogrid/wiki/images/padogrid-padogrid-1.x.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-PadoGrid-1.x) [![Host OS](https://github.com/padogrid/padogrid/wiki/images/padogrid-host-os.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Host-OS) [![VM](https://github.com/padogrid/padogrid/wiki/images/padogrid-vm.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-VM) [![Docker](https://github.com/padogrid/padogrid/wiki/images/padogrid-docker.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Docker) [![Kubernetes](https://github.com/padogrid/padogrid/wiki/images/padogrid-kubernetes.drawio.svg)](https://github.com/padogrid/padogrid/wiki/Platform-Kubernetes)
 
 # Session Expiration in WAN Environment
 
@@ -99,11 +99,11 @@ update_padogrid -product grafana
 
 This bundle has been configured to run full members (data nodes) and lite-members (compute nodes). By default, the first two members are full members and any additional members added thereafter are configured as lite-members. This setting is configurable in the each cluster's `bin_sh/setenv.sh` file. 
 
-:pencil2: *If you want to increase the number of full members then set the `FULL_MEMBER_COUNT` environment variable in `bin_sh/setenv.sh` for both `wan1` and `wan2` clusters.*
+✏️  *If you want to increase the number of full members then set the `FULL_MEMBER_COUNT` environment variable in `bin_sh/setenv.sh` for both `wan1` and `wan2` clusters.*
 
 Please select one of the initialization options below.
 
-:pencil2: *You can ignore keytool errors which will be shown if you have already run the `build_app` script previously.*
+✏️  *You can ignore keytool errors which will be shown if you have already run the `build_app` script previously.*
 
 ### Initialization Option 1. Run Full Members with Smart Routing Enabled
 
@@ -113,10 +113,8 @@ switch_cluster wan1/bin_sh
 ./build_app
 
 # 2. Add 2 members to wan1 and wan2 clusters
-add_member -cluster wan1
-add_member -cluster wan1
-add_member -cluster wan2
-add_member -cluster wan2
+add_member -cluster wan1 -count 2
+add_member -cluster wan2 -count 2
 
 # 3. Initialize perf_test apps
 cd_app perf_test_wan1/bin_sh
@@ -135,13 +133,9 @@ switch_cluster wan1/bin_sh
 ./build_app
 
 # 2. Add 3 members to wan1 and wan2 clusters. 2 full and 1 lite-members per cluster
-add_member -cluster wan1
-add_member -cluster wan1
-add_member -cluster wan1
+add_member -cluster wan1 -count 3
 
-add_member -cluster wan2
-add_member -cluster wan2
-add_member -cluster wan2
+add_member -cluster wan2 -count 3
 
 # 3. Initialize perf_test apps
 cd_app perf_test_wan1/bin_sh
@@ -268,7 +262,7 @@ hazelcast.yaml:
 ...
 ```
 
-:exclamation: *If you make any changes to the configuration files, then you must restart the cluster for the changes to take effect.*
+❗️ *If you make any changes to the configuration files, then you must restart the cluster for the changes to take effect.*
 
 Open Management Center in two separate browsers. The first one to monitor **wan1** and the second one to monitor **wan2**. We will be monitoring both clusters as we carry out test cases.
 
@@ -416,7 +410,7 @@ Now, make the session active by repeatedly updating the primary map within the 1
 ./test_session_ingestion -type STRING -primary smks_EN01 -relevant mks1_EN01,mks2_EN01 -entry RESET -session s1 -attribute a1 -metadata true
 ```
 
-:pencil2: The `-entry RESET` option updates the primary map only. It does not update the the relevant maps. It updates `SessionMetadata` in the primary map with the specified relevant map names. 
+✏️  The `-entry RESET` option updates the primary map only. It does not update the the relevant maps. It updates `SessionMetadata` in the primary map with the specified relevant map names. 
 
 ### Test Case 4. Ingestion by `SessionMetadata`
 
